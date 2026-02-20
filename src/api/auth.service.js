@@ -8,7 +8,7 @@ import api from './api'
 //   return data
 // }
 export const loginRequest = async (login, password) => {
-  const { data } = await api.post('/api/auth/login', {
+  const { data } = await api.post('/auth/login', {
     login,
     password,
   })
@@ -18,6 +18,6 @@ export const loginRequest = async (login, password) => {
 
 
 export const getPerfil = async () => {
-  const { data } = await api.get('/api/auth/perfil')
+  const { data } = await api.get('/auth/perfil')
   return data
 }

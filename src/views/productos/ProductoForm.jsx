@@ -22,7 +22,8 @@ import { marcasService } from '../../services/marcas.service'
 import { productosService } from '../../services/productos.service'
 import { alertSuccess, alertError } from '../../utils/alert'
 
-const API_URL = 'http://localhost:5000'
+//const API_URL = 'http://localhost:5000'
+const API_URL = import.meta.env.VITE_API_URL
 
 const selectStyles = {
   control: (base) => ({
@@ -104,10 +105,14 @@ const ProductoForm = () => {
     })
 
     setCodigoInterno(res.data.codigo)
+    // 🔥 Siempre usar backend (si no hay, usar default.png)
+    const nombreImagen = res.data.imagen || 'default.png'
 
-    if (res.data.imagen) {
-      setImagenPreview(`${API_URL}/uploads/productos/${res.data.imagen}`)
-    }
+    setImagenPreview(`${API_URL}/uploads/productos/${nombreImagen}`)
+
+    // if (res.data.imagen) {
+    //   setImagenPreview(`${API_URL}/uploads/productos/${res.data.imagen}`)
+    // }
   }
 
   const categoriaOptions = categorias.map((c) => ({
@@ -230,7 +235,16 @@ const ProductoForm = () => {
                     background: '#f9f9f9',
                   }}
                 >
-                  {imagenPreview ? (
+                  <img
+                    src={imagenPreview || `${API_URL}/uploads/productos/default.png`}
+                    alt="Preview"
+                    style={{
+                      maxHeight: '100%',
+                      maxWidth: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                  {/* {imagenPreview ? (
                     <img
                       src={imagenPreview}
                       alt="Preview"
@@ -238,7 +252,7 @@ const ProductoForm = () => {
                     />
                   ) : (
                     <span>Sin imagen</span>
-                  )}
+                  )} */}
                 </div>
 
                 <CFormInput

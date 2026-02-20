@@ -18,6 +18,6 @@ export const loginRequest = async (login, password) => {
 
 
 export const getPerfil = async () => {
-  const { data } = await api.get('/auth/perfil')
+  const { data } = await api.get('/api/auth/perfil')
   return data
 }

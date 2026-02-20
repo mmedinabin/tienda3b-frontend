@@ -29,3 +29,15 @@ export const alertConfirm = (message) => {
     reverseButtons: true,
   })
 }
+
+export const alertSuccessFast = (mensaje) => {
+  Swal.fire({
+    icon: 'success',
+    title: mensaje,
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 1300,
+    timerProgressBar: true,
+  })
+}

@@ -20,7 +20,7 @@ import {
 import { categoriasService } from '../../services/categorias.service'
 import { marcasService } from '../../services/marcas.service'
 import { productosService } from '../../services/productos.service'
-import { alertSuccess, alertError } from '../../utils/alert'
+import { alertSuccess, alertError, alertSuccessFast } from '../../utils/alert'
 
 //const API_URL = 'http://localhost:5000'
 const API_URL = import.meta.env.VITE_API_URL
@@ -446,17 +446,6 @@ const ProductoForm = () => {
                                 } catch {}
                               }}
                             />
-                            {/* <CFormInput
-                              label="Fecha vencimiento *"
-                              type="date"
-                              value={stockInicial.fecha_vencimiento}
-                              onChange={(e) =>
-                                setStockInicial({
-                                  ...stockInicial,
-                                  fecha_vencimiento: e.target.value,
-                                })
-                              }
-                            /> */}
                           </CCol>
                         )}
                       </CRow>
@@ -495,12 +484,25 @@ const ProductoForm = () => {
             color="primary"
             onClick={async () => {
               if (!nuevaCategoria.trim()) return
+
               const res = await categoriasService.crear({ nombre: nuevaCategoria })
+
               await cargarCategorias()
+
               setForm({ ...form, categoria_id: res.data.id })
               setNuevaCategoria('')
               setModalCategoria(false)
+
+              alertSuccessFast('Categoría creada')
             }}
+            // onClick={async () => {
+            //   if (!nuevaCategoria.trim()) return
+            //   const res = await categoriasService.crear({ nombre: nuevaCategoria })
+            //   await cargarCategorias()
+            //   setForm({ ...form, categoria_id: res.data.id })
+            //   setNuevaCategoria('')
+            //   setModalCategoria(false)
+            // }}
           >
             Guardar
           </CButton>
@@ -527,11 +529,16 @@ const ProductoForm = () => {
             color="primary"
             onClick={async () => {
               if (!nuevaMarca.trim()) return
+
               const res = await marcasService.crear({ nombre: nuevaMarca })
+
               await cargarMarcas()
+
               setForm({ ...form, marca_id: res.data.id })
               setNuevaMarca('')
               setModalMarca(false)
+
+              alertSuccessFast('Marca creada')
             }}
           >
             Guardar

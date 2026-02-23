@@ -148,55 +148,103 @@ const POSPage = () => {
     return clientes.find((c) => c.nombre === 'SIN NOMBRE') || clientes[0]
   }
 
+  // const cobrarrr = async () => {
+  //   if (loading) return
+
+  //   setLoading(true)
+
+  //   if (carrito.length === 0) {
+  //     Swal.fire('No hay productos')
+  //     setLoading(false)
+  //     return
+  //   }
+
+  //   if (tipoPago === 'EFECTIVO' && vuelto < 0) {
+  //     Swal.fire('Monto insuficiente')
+  //     setLoading(false)
+  //     return
+  //   }
+
+  //   try {
+  //     const payload = {
+  //       cliente_id: clienteId || null,
+  //       tipo_pago: tipoPago,
+  //       productos: carrito.map((p) => ({
+  //         producto_id: p.producto_id,
+  //         cantidad: p.cantidad,
+  //         precio_venta: p.precio_venta,
+  //       })),
+  //     }
+
+  //     const res = await ventasService(payload)
+
+  //     Swal.fire('Venta registrada', res.codigo, 'success')
+
+  //     setCarrito([])
+  //     setMontoRecibido('')
+
+  //     setTipoPago('EFECTIVO')
+
+  //     const clienteDefault = obtenerClienteDefault()
+  //     if (clienteDefault) {
+  //       setClienteId(clienteDefault.id)
+  //     }
+
+  //     await cargarProductos()
+  //   } catch (error) {
+  //     Swal.fire('Error', error.response?.data?.message, 'error')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
   const cobrar = async () => {
-    if (loading) return
+  if (loading) return
 
-    setLoading(true)
+  setLoading(true)
 
-    if (carrito.length === 0) {
-      Swal.fire('No hay productos')
-      setLoading(false)
-      return
-    }
-
-    if (tipoPago === 'EFECTIVO' && vuelto < 0) {
-      Swal.fire('Monto insuficiente')
-      setLoading(false)
-      return
-    }
-
-    try {
-      const payload = {
-        cliente_id: clienteId || null,
-        tipo_pago: tipoPago,
-        productos: carrito.map((p) => ({
-          producto_id: p.producto_id,
-          cantidad: p.cantidad,
-          precio_venta: p.precio_venta,
-        })),
-      }
-
-      const res = await ventasService(payload)
-
-      Swal.fire('Venta registrada', res.codigo, 'success')
-
-      setCarrito([])
-      setMontoRecibido('')
-
-      setTipoPago('EFECTIVO')
-
-      const clienteDefault = obtenerClienteDefault()
-      if (clienteDefault) {
-        setClienteId(clienteDefault.id)
-      }
-
-      await cargarProductos()
-    } catch (error) {
-      Swal.fire('Error', error.response?.data?.message, 'error')
-    } finally {
-      setLoading(false)
-    }
+  if (carrito.length === 0) {
+    Swal.fire('No hay productos')
+    setLoading(false)
+    return
   }
+
+  if (tipoPago === 'EFECTIVO' && vuelto < 0) {
+    Swal.fire('Monto insuficiente')
+    setLoading(false)
+    return
+  }
+
+  try {
+    const payload = {
+      cliente_id: clienteId || null,
+      tipo_pago: tipoPago,
+      productos: carrito.map((p) => ({
+        producto_id: p.producto_id,
+        cantidad: p.cantidad,
+        precio_venta: p.precio_venta,
+      })),
+    }
+
+    const { data } = await ventasService.crear(payload)
+
+    Swal.fire('Venta registrada', data.codigo, 'success')
+
+    setCarrito([])
+    setMontoRecibido('')
+    setTipoPago('EFECTIVO')
+
+    const clienteDefault = obtenerClienteDefault()
+    if (clienteDefault) {
+      setClienteId(clienteDefault.id)
+    }
+
+    await cargarProductos()
+  } catch (error) {
+    Swal.fire('Error', error.response?.data?.message, 'error')
+  } finally {
+    setLoading(false)
+  }
+}
 
   const abrirCantidadManual = async (producto) => {
     const { value } = await Swal.fire({
@@ -655,35 +703,6 @@ const POSPage = () => {
             </CButton>
           </div>
         )}
-
-        {/* {isMobile && (
-          <div
-            style={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              width: '100%',
-              backgroundColor: 'var(--cui-body-bg)',
-              padding: '12px 16px',
-              boxShadow: '0 -6px 16px rgba(0,0,0,0.12)',
-              zIndex: 1050,
-            }}
-          >
-            <CButton
-              color={carrito.length === 0 ? 'secondary' : 'primary'}
-              size="lg"
-              className="w-100 fw-semibold"
-              style={{
-                borderRadius: '12px',
-                height: '48px',
-              }}
-              onClick={cobrar}
-              disabled={carrito.length === 0 || loading}
-            >
-              {loading ? 'Procesando...' : `Finalizar Venta • Bs ${total.toFixed(2)}`}
-            </CButton>
-          </div>
-        )} */}
       </CCol>
     </CRow>
   )

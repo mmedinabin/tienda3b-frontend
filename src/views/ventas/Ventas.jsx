@@ -3,6 +3,7 @@ import { CCard, CCardBody, CButton, CSpinner, CBadge } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 import { ventasService } from '../../services/ventas.service'
 import SmartTable from '../../components/SmartTable'
+import { useAuthStore } from '../../store/auth.store'
 import Swal from 'sweetalert2'
 
 const Ventas = () => {
@@ -10,16 +11,16 @@ const Ventas = () => {
   const [ventas, setVentas] = useState([])
   const [cargando, setCargando] = useState(true)
 
-  const { sucursalActiva } = useSucursal()
+  const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
 
-//   useEffect(() => {
-//     cargarVentas()
-//   }, [])
+  //   useEffect(() => {
+  //     cargarVentas()
+  //   }, [])
 
   useEffect(() => {
-  if (!sucursalActiva) return
-  cargarVentas()
-}, [sucursalActiva])
+    if (!sucursalActiva) return
+    cargarVentas()
+  }, [sucursalActiva])
 
   const cargarVentas = async () => {
     try {
@@ -69,7 +70,7 @@ const Ventas = () => {
     {
       key: 'codigo',
       label: 'Código',
-      style: { fontFamily: 'monospace', fontSize: '0.9rem' }
+      style: { fontFamily: 'monospace', fontSize: '0.9rem' },
     },
     {
       key: 'fecha',

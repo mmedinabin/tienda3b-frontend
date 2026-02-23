@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
 import Select from 'react-select'
 
 import { productosService } from '../../services/productos.service'
-import ventasService from '../../services/ventas.service'
+import { ventasService } from '../../services/ventas.service'
 import { clientesService } from '../../services/clientes.service'
 
 const POSPage = () => {
@@ -197,54 +197,58 @@ const POSPage = () => {
   //     setLoading(false)
   //   }
   // }
+
   const cobrar = async () => {
-  if (loading) return
+    if (loading) return
+    setLoading(true)
 
-  setLoading(true)
-
-  if (carrito.length === 0) {
-    Swal.fire('No hay productos')
-    setLoading(false)
-    return
-  }
-
-  if (tipoPago === 'EFECTIVO' && vuelto < 0) {
-    Swal.fire('Monto insuficiente')
-    setLoading(false)
-    return
-  }
-
-  try {
-    const payload = {
-      cliente_id: clienteId || null,
-      tipo_pago: tipoPago,
-      productos: carrito.map((p) => ({
-        producto_id: p.producto_id,
-        cantidad: p.cantidad,
-        precio_venta: p.precio_venta,
-      })),
+    if (carrito.length === 0) {
+      Swal.fire('No hay productos')
+      setLoading(false)
+      return
     }
 
-    const { data } = await ventasService.crear(payload)
-
-    Swal.fire('Venta registrada', data.codigo, 'success')
-
-    setCarrito([])
-    setMontoRecibido('')
-    setTipoPago('EFECTIVO')
-
-    const clienteDefault = obtenerClienteDefault()
-    if (clienteDefault) {
-      setClienteId(clienteDefault.id)
+    if (tipoPago === 'EFECTIVO' && vuelto < 0) {
+      Swal.fire('Monto insuficiente')
+      setLoading(false)
+      return
     }
 
-    await cargarProductos()
-  } catch (error) {
-    Swal.fire('Error', error.response?.data?.message, 'error')
-  } finally {
-    setLoading(false)
+    try {
+      const payload = {
+        cliente_id: clienteId || null,
+        tipo_pago: tipoPago,
+        productos: carrito.map((p) => ({
+          producto_id: p.producto_id,
+          cantidad: p.cantidad,
+          precio_venta: p.precio_venta,
+        })),
+      }
+
+      const { data } = await ventasService.crear(payload)
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Venta registrada',
+        text: data.codigo,
+        timer: 2000,
+        showConfirmButton: false,
+      })
+
+      setCarrito([])
+      setMontoRecibido('')
+      setTipoPago('EFECTIVO')
+
+      const clienteDefault = obtenerClienteDefault()
+      if (clienteDefault) setClienteId(clienteDefault.id)
+
+      await cargarProductos()
+    } catch (error) {
+      Swal.fire('Error', error.response?.data?.message || 'Error al registrar', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   const abrirCantidadManual = async (producto) => {
     const { value } = await Swal.fire({

@@ -18,8 +18,8 @@ export const alertError = (message) => {
   })
 }
 
-export const alertConfirm = (message) => {
-  return Swal.fire({
+export const alertConfirm = async (message) => {
+  const result = await Swal.fire({
     icon: 'warning',
     title: 'Confirmación',
     text: message,
@@ -28,6 +28,8 @@ export const alertConfirm = (message) => {
     cancelButtonText: 'Cancelar',
     reverseButtons: true,
   })
+
+  return result.isConfirmed
 }
 
 export const alertSuccessFast = (mensaje) => {

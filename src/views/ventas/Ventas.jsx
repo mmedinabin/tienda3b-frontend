@@ -7,7 +7,7 @@ import {
   CBadge,
 } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
-import ventasService from '../../services/ventas.service'
+import { ventasService } from '../../services/ventas.service'
 import SmartTable from '../../components/SmartTable'
 import Swal from 'sweetalert2'
 

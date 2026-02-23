@@ -10,9 +10,16 @@ const Ventas = () => {
   const [ventas, setVentas] = useState([])
   const [cargando, setCargando] = useState(true)
 
+  const { sucursalActiva } = useSucursal()
+
+//   useEffect(() => {
+//     cargarVentas()
+//   }, [])
+
   useEffect(() => {
-    cargarVentas()
-  }, [])
+  if (!sucursalActiva) return
+  cargarVentas()
+}, [sucursalActiva])
 
   const cargarVentas = async () => {
     try {

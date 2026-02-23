@@ -170,7 +170,7 @@ const CompraNueva = () => {
           .filter((p) => p.estado === 1)
           .map((p) => ({
             value: p.id,
-            label: `${p.nombre}${p.descripcion ? ' ' + p.descripcion : ''}`,
+            label: `${p.marca}${p.nombre}${p.descripcion ? ' ' + p.descripcion : ''}`,
             precio_venta: p.precio_venta,
             unidad_medida: p.unidad_medida,
             tipo_presentacion: p.tipo_presentacion,

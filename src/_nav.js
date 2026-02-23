@@ -31,6 +31,13 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Ventas - POS',
+    to: '/historialventas',
+    icon: <CIcon icon={cilCash} className="nav-icon" />,
+    permiso: 'ventas',
+  },
+    {
+    component: CNavItem,
+    name: 'Lista - Ventas',
     to: '/ventas',
     icon: <CIcon icon={cilCash} className="nav-icon" />,
     permiso: 'ventas',

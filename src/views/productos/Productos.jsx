@@ -47,19 +47,39 @@ const Productos = () => {
       {
         key: 'imagen',
         label: 'Imagen',
-        render: (row) => (
-          <img
-            src={`${API_URL}/uploads/productos/${row.imagen || 'default.png'}`}
-            width="40"
-            height="40"
-            style={{ objectFit: 'cover', borderRadius: 4 }}
-            alt="producto"
-            onError={(e) => {
-              e.target.src = `${API_URL}/uploads/productos/default.png`
-            }}
-          />
-        ),
+        render: (row) => {
+          // Si es null, vacío o default.png → mostrar "-"
+          if (!row.imagen || row.imagen === 'default.png') {
+            return <span className="text-muted">-</span>
+          }
+
+          return (
+            <img
+              src={`${API_URL}/uploads/productos/${row.imagen}`}
+              width="40"
+              height="40"
+              style={{ objectFit: 'cover', borderRadius: 4 }}
+              alt="producto"
+            />
+          )
+        },
       },
+      // {
+      //   key: 'imagen',
+      //   label: 'Imagen',
+      //   render: (row) => (
+      //     <img
+      //       src={`${API_URL}/uploads/productos/${row.imagen || 'default.png'}`}
+      //       width="40"
+      //       height="40"
+      //       style={{ objectFit: 'cover', borderRadius: 4 }}
+      //       alt="producto"
+      //       onError={(e) => {
+      //         e.target.src = `${API_URL}/uploads/productos/default.png`
+      //       }}
+      //     />
+      //   ),
+      // },
       {
         key: 'categoria',
         label: 'Categoría',
@@ -73,6 +93,23 @@ const Productos = () => {
           </span>
         ),
       },
+      // {
+      //   key: 'nombre',
+      //   label: 'Descripción',
+      //   render: (row) => (
+      //     <div>
+      //       <div className="fw-semibold">{row.nombre}</div>
+
+      //       {row.descripcion && row.descripcion.trim() !== '' && (
+      //         <div className="text-muted small">{row.descripcion}</div>
+      //       )}
+
+      //       <div className="text-muted small">
+      //         {row.tipo_presentacion} {row.unidad_medida}
+      //       </div>
+      //     </div>
+      //   ),
+      // },
       {
         key: 'nombre',
         label: 'Descripción',
@@ -83,10 +120,6 @@ const Productos = () => {
             {row.descripcion && row.descripcion.trim() !== '' && (
               <div className="text-muted small">{row.descripcion}</div>
             )}
-
-            <div className="text-muted small">
-              {row.tipo_presentacion} {row.unidad_medida}
-            </div>
           </div>
         ),
       },

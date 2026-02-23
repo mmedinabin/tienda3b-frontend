@@ -139,7 +139,7 @@ const Ventas = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>Historial de Ventas</h4>
 
-        <CButton color="primary" onClick={() => navigate('/ventas/nuevo')}>
+        <CButton color="primary" onClick={() => navigate('/ventas')}>
           Nueva venta
         </CButton>
       </div>

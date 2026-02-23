@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  CCard,
-  CCardBody,
-  CButton,
-  CSpinner,
-  CBadge,
-} from '@coreui/react'
+import { CCard, CCardBody, CButton, CSpinner, CBadge } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 import { ventasService } from '../../services/ventas.service'
 import SmartTable from '../../components/SmartTable'
@@ -77,7 +71,11 @@ const Ventas = () => {
     {
       key: 'cliente',
       label: 'Cliente',
-      render: (row) => row.cliente || '-',
+      render: (row) => {
+        const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
+
+        return esGeneral ? <span className="text-muted">General</span> : row.cliente
+      },
     },
     {
       key: 'sucursal',
@@ -94,11 +92,7 @@ const Ventas = () => {
           CREDITO: 'warning',
         }
 
-        return (
-          <CBadge color={colors[row.tipo_pago] || 'secondary'}>
-            {row.tipo_pago}
-          </CBadge>
-        )
+        return <CBadge color={colors[row.tipo_pago] || 'secondary'}>{row.tipo_pago}</CBadge>
       },
     },
     {
@@ -127,11 +121,7 @@ const Ventas = () => {
       key: 'acciones',
       label: '',
       render: (row) => (
-        <CButton
-          size="sm"
-          color="info"
-          onClick={() => descargarPDF(row)}
-        >
+        <CButton size="sm" color="info" onClick={() => descargarPDF(row)}>
           Ver PDF
         </CButton>
       ),
@@ -155,15 +145,9 @@ const Ventas = () => {
               <CSpinner color="primary" />
             </div>
           ) : ventas.length === 0 ? (
-            <div className="text-center text-muted p-4">
-              No existen ventas registradas
-            </div>
+            <div className="text-center text-muted p-4">No existen ventas registradas</div>
           ) : (
-            <SmartTable
-              columns={columns}
-              data={ventas}
-              pageSize={10}
-            />
+            <SmartTable columns={columns} data={ventas} pageSize={10} />
           )}
         </CCardBody>
       </CCard>

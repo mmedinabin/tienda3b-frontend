@@ -54,6 +54,11 @@ const Compras = () => {
       label: 'Proveedor',
     },
     {
+      key: 'sucursal',
+      label: 'Sucursal',
+      style: { whiteSpace: 'nowrap' },
+    },
+    {
       key: 'tipo_pago',
       label: 'Tipo pago',
     },
@@ -160,56 +165,6 @@ const Compras = () => {
             <div className="text-center text-muted p-4">No existen compras registradas</div>
           ) : (
             <SmartTable columns={columns} data={compras} pageSize={10} />
-            // <CTable bordered hover responsive>
-            //   <CTableHead>
-            //     <CTableRow>
-            //       <CTableHeaderCell>Código</CTableHeaderCell>
-            //       <CTableHeaderCell>Fecha</CTableHeaderCell>
-            //       <CTableHeaderCell>Proveedor</CTableHeaderCell>
-            //       <CTableHeaderCell>Tipo pago</CTableHeaderCell>
-            //       <CTableHeaderCell>Total</CTableHeaderCell>
-            //       <CTableHeaderCell>Saldo</CTableHeaderCell>
-            //       <CTableHeaderCell>Estado</CTableHeaderCell>
-            //       <CTableHeaderCell></CTableHeaderCell>
-            //     </CTableRow>
-            //   </CTableHead>
-
-            //   <CTableBody>
-            //     {compras.map((compra) => (
-            //       <CTableRow key={compra.id}>
-            //         <CTableDataCell>{compra.codigo}</CTableDataCell>
-
-            //         <CTableDataCell>{new Date(compra.fecha).toLocaleDateString()}</CTableDataCell>
-
-            //         <CTableDataCell>{compra.proveedor}</CTableDataCell>
-
-            //         <CTableDataCell>{compra.tipo_pago}</CTableDataCell>
-
-            //         <CTableDataCell>Bs {Number(compra.total).toFixed(2)}</CTableDataCell>
-
-            //         <CTableDataCell>Bs {Number(compra.saldo).toFixed(2)}</CTableDataCell>
-
-            //         <CTableDataCell>
-            //           {Number(compra.saldo) > 0 ? (
-            //             <CBadge color="warning">Pendiente</CBadge>
-            //           ) : (
-            //             <CBadge color="success">Pagado</CBadge>
-            //           )}
-            //         </CTableDataCell>
-
-            //         <CTableDataCell>
-            //           <CButton
-            //             size="sm"
-            //             color="info"
-            //             onClick={() => navigate(`/compras/${compra.id}`)}
-            //           >
-            //             Ver
-            //           </CButton>
-            //         </CTableDataCell>
-            //       </CTableRow>
-            //     ))}
-            //   </CTableBody>
-            // </CTable>
           )}
         </CCardBody>
       </CCard>

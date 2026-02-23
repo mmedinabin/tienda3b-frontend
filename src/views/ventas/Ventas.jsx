@@ -62,6 +62,7 @@ const Ventas = () => {
     {
       key: 'codigo',
       label: 'Código',
+      style: { fontFamily: 'monospace', fontSize: '0.9rem' }
     },
     {
       key: 'fecha',
@@ -98,12 +99,17 @@ const Ventas = () => {
     {
       key: 'total',
       label: 'Total',
-      render: (row) => `Bs ${Number(row.total).toFixed(2)}`,
+      style: { textAlign: 'right' },
+      render: (row) => <strong>Bs {Number(row.total).toFixed(2)}</strong>,
     },
     {
       key: 'saldo',
       label: 'Saldo',
-      render: (row) => `Bs ${Number(row.saldo).toFixed(2)}`,
+      render: (row) => (
+        <span className={row.saldo > 0 ? 'text-warning' : 'text-muted'}>
+          Bs {Number(row.saldo).toFixed(2)}
+        </span>
+      ),
     },
     {
       key: 'estado',

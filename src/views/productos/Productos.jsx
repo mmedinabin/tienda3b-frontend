@@ -60,6 +60,107 @@ const Productos = () => {
           />
         ),
       },
+      {
+        key: 'categoria',
+        label: 'Categoría',
+      },
+      {
+        key: 'marca',
+        label: 'Marca',
+        render: (row) => (
+          <span className={!row.marca ? 'text-muted' : ''}>
+            {row.marca && row.marca.trim() !== '' ? row.marca : '-'}
+          </span>
+        ),
+      },
+      {
+        key: 'nombre',
+        label: 'Descripción',
+        render: (row) => (
+          <div>
+            <div className="fw-semibold">{row.nombre}</div>
+
+            {row.descripcion && row.descripcion.trim() !== '' && (
+              <div className="text-muted small">{row.descripcion}</div>
+            )}
+
+            <div className="text-muted small">
+              {row.tipo_presentacion} {row.unidad_medida}
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: 'precio_venta',
+        label: 'Precio/Venta',
+        render: (row) => (
+          <span className="fw-semibold text-success">Bs {Number(row.precio_venta).toFixed(2)}</span>
+        ),
+      },
+      {
+        key: 'estado',
+        label: 'Estado',
+        render: (row) => (
+          <CBadge color={row.estado ? 'success' : 'danger'}>
+            {row.estado ? 'Activo' : 'Inactivo'}
+          </CBadge>
+        ),
+      },
+      {
+        key: 'acciones',
+        label: 'Acciones',
+        render: (row) => (
+          <div className="d-flex gap-2 justify-content-end">
+            <CTooltip content="Editar producto">
+              <CButton
+                size="sm"
+                color="info"
+                variant="outline"
+                onClick={() => navigate(`/productos/editar/${row.id}`)}
+              >
+                <CIcon icon={cilPencil} />
+              </CButton>
+            </CTooltip>
+
+            <CTooltip content={row.estado ? 'Desactivar producto' : 'Activar producto'}>
+              <CButton
+                size="sm"
+                color={row.estado ? 'danger' : 'success'}
+                variant="outline"
+                onClick={() => toggleEstado(row)}
+              >
+                <CIcon icon={row.estado ? cilBan : cilCheck} />
+              </CButton>
+            </CTooltip>
+          </div>
+        ),
+      },
+    ],
+    [],
+  )
+
+  const columnss = useMemo(
+    () => [
+      {
+        key: 'codigo',
+        label: 'Código',
+      },
+      {
+        key: 'imagen',
+        label: 'Imagen',
+        render: (row) => (
+          <img
+            src={`${API_URL}/uploads/productos/${row.imagen || 'default.png'}`}
+            width="40"
+            height="40"
+            style={{ objectFit: 'cover', borderRadius: 4 }}
+            alt="producto"
+            onError={(e) => {
+              e.target.src = `${API_URL}/uploads/productos/default.png`
+            }}
+          />
+        ),
+      },
 
       // {
       //   key: 'imagen',

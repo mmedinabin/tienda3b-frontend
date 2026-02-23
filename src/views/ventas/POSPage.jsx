@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
 import Select from 'react-select'
 
 import { productosService } from '../../services/productos.service'
-import { ventasService } from '../../services/ventas.service'
+import ventasService from '../../services/ventas.service'
 import { clientesService } from '../../services/clientes.service'
 
 const POSPage = () => {

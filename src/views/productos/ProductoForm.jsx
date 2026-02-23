@@ -339,14 +339,15 @@ const ProductoForm = () => {
                 </div>
 
                 <CFormInput
-                  label="Nombre *"
+                  label="Nombre/Descripción *"
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                   className="mb-3"
                 />
 
                 <CFormInput
-                  label="Descripción"
+                  label="Variante (opcional)"
+                  placeholder='ej. Colores (Azul), Aromas (Floral), etc.'
                   value={form.descripcion}
                   onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
                   className="mb-3"

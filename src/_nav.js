@@ -31,14 +31,14 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Ventas - POS',
-    to: '/historialventas',
+    to: '/ventas', // ✅ POS
     icon: <CIcon icon={cilCash} className="nav-icon" />,
     permiso: 'ventas',
   },
-    {
+  {
     component: CNavItem,
     name: 'Lista - Ventas',
-    to: '/ventas',
+    to: '/historialventas', // ✅ Historial
     icon: <CIcon icon={cilCash} className="nav-icon" />,
     permiso: 'ventas',
   },

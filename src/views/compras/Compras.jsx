@@ -133,9 +133,13 @@ const Compras = () => {
               } else {
                 window.open(url, '_blank')
               }
+              setTimeout(() => URL.revokeObjectURL(url), 1000)
             } catch (error) {
               console.error(error)
-              alert('No autorizado o sesión vencida')
+              Swal.fire({
+                icon: 'error',
+                title: 'Sesión expirada',
+              })
             }
           }}
         >

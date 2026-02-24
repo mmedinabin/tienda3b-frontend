@@ -135,7 +135,7 @@ const Dashboard = () => {
 
         {/* 📆 Venta Semana */}
         <CCol sm={6} lg={3}>
-          <CCard className="mb-4 text-white bg-success">
+          <CCard className="mb-4 text-white bg-secondary">
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
@@ -168,35 +168,8 @@ const Dashboard = () => {
 
       {/* 🔵 Segunda fila */}
       <CRow>
-        {/* 🧾 Tickets Hoy */}
-        <CCol sm={6} lg={6}>
-          <CCard className="mb-4 border-start border-start-4 border-start-primary">
-            <CCardBody>
-              <CCardText>Tickets Hoy</CCardText>
-              <CCardTitle className="fs-4 fw-bold">{data.ticketsHoy}</CCardTitle>
-            </CCardBody>
-          </CCard>
-        </CCol>
-
-        {/* 🚨 Bajo Stock */}
-        <CCol sm={6} lg={6}>
-          <CCard className="mb-4 border-start border-start-4 border-start-danger">
-            <CCardBody>
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <CCardText>Productos Bajo Stock</CCardText>
-                  <CCardTitle className="fs-4 fw-bold text-danger">
-                    {data.productosBajoStock}
-                  </CCardTitle>
-                </div>
-                <CIcon icon={cilWarning} size="xl" className="text-danger" />
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-
         {/* 📦 Inventario */}
-        <CCol sm={6} lg={3}>
+        <CCol sm={6} lg={4}>
           <CCard className="mb-4 text-white bg-dark">
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
@@ -211,7 +184,34 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
+        {/* 🧾 Tickets Hoy */}
+        <CCol sm={6} lg={4}>
+          <CCard className="mb-4 border-start border-start-4 border-start-primary">
+            <CCardBody>
+              <CCardText>Tickets Hoy</CCardText>
+              <CCardTitle className="fs-4 fw-bold">{data.ticketsHoy}</CCardTitle>
+            </CCardBody>
+          </CCard>
+        </CCol>
+
+        {/* 🚨 Bajo Stock */}
+        <CCol sm={6} lg={4}>
+          <CCard className="mb-4 border-start border-start-4 border-start-danger">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <CCardText>Productos Bajo Stock</CCardText>
+                  <CCardTitle className="fs-4 fw-bold text-danger">
+                    {data.productosBajoStock}
+                  </CCardTitle>
+                </div>
+                <CIcon icon={cilWarning} size="xl" className="text-danger" />
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
       </CRow>
+
       <CRow>
         {/* 📦 Productos Catálogo */}
         <CCol sm={6} lg={6}>

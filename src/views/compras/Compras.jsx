@@ -18,6 +18,8 @@ import comprasService from '../../services/compras.service'
 import SmartTable from '../../components/SmartTable'
 
 const Compras = () => {
+  const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
+
   const navigate = useNavigate()
   const [compras, setCompras] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -25,8 +27,15 @@ const Compras = () => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
   useEffect(() => {
+    if (!sucursalActiva) {
+      setCompras([])
+      setCargando(false)
+      return
+    }
+
     const cargarCompras = async () => {
       try {
+        setCargando(true)
         const { data } = await comprasService.listar()
         setCompras(data)
       } catch (error) {
@@ -37,7 +46,21 @@ const Compras = () => {
     }
 
     cargarCompras()
-  }, [])
+  }, [sucursalActiva])
+  // useEffect(() => {
+  //   const cargarCompras = async () => {
+  //     try {
+  //       const { data } = await comprasService.listar()
+  //       setCompras(data)
+  //     } catch (error) {
+  //       console.error('Error cargando compras')
+  //     } finally {
+  //       setCargando(false)
+  //     }
+  //   }
+
+  //   cargarCompras()
+  // }, [])
 
   const columns = [
     {

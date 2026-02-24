@@ -42,9 +42,30 @@ const POSPage = () => {
   // }, [])
 
   useEffect(() => {
-    if (!sucursalActiva) return
-    cargarProductos()
-    cargarClientes()
+    if (!sucursalActiva) {
+      setProductos([])
+      setClientes([])
+      setCarrito([])
+      return
+    }
+
+    const cargarData = async () => {
+      try {
+        setLoading(true)
+
+        await cargarProductos()
+        await cargarClientes()
+
+        // ⚠️ Limpia carrito cuando cambia sucursal
+        setCarrito([])
+      } catch (error) {
+        console.error('Error recargando POS')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    cargarData()
   }, [sucursalActiva])
 
   const cargarProductos = async () => {

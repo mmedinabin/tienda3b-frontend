@@ -170,16 +170,16 @@ const Dashboard = () => {
       <CRow>
         {/* 📦 Inventario */}
         <CCol sm={6} lg={4}>
-          <CCard className="mb-4 text-white bg-dark">
+          <CCard className="mb-4 border-start border-start-4 border-start-secondary shadow-sm">
             <CCardBody>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
-                  <CCardText>Inventario Valorizado</CCardText>
+                  <CCardText className="text-medium-emphasis">Inventario Valorizado</CCardText>
                   <CCardTitle className="fs-4 fw-bold">
                     {formatearMoneda(data.inventarioValorizado)}
                   </CCardTitle>
                 </div>
-                <CIcon icon={cilLayers} size="xl" />
+                <CIcon icon={cilLayers} size="xl" className="text-secondary" />
               </div>
             </CCardBody>
           </CCard>

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { CCard, CCardBody, CButton, CSpinner, CBadge } from '@coreui/react'
+import { CCard, CCardBody, CButton, CSpinner, CBadge,  CCard,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 import { ventasService } from '../../services/ventas.service'
 import SmartTable from '../../components/SmartTable'

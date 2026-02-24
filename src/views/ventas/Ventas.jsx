@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { CCard, CCardBody, CButton, CSpinner, CBadge,  CCard,
+import {
+  CCard,
+  CCardBody,
+  CButton,
+  CSpinner,
+  CBadge,
   CModal,
   CModalHeader,
   CModalTitle,
   CModalBody,
-  CModalFooter } from '@coreui/react'
+  CModalFooter,
+} from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 import { ventasService } from '../../services/ventas.service'
 import SmartTable from '../../components/SmartTable'
@@ -28,6 +34,12 @@ const Ventas = () => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  const [ventaSeleccionada, setVentaSeleccionada] = useState(null)
+
+  const abrirDetalle = (venta) => {
+    setVentaSeleccionada(venta)
+  }
 
   useEffect(() => {
     if (!sucursalActiva) return

@@ -13,6 +13,17 @@ const Ventas = () => {
 
   const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   useEffect(() => {
     if (!sucursalActiva) return
 
@@ -142,37 +153,69 @@ const Ventas = () => {
     },
   ]
 
-//   return (
-//     <>
-//       <div className="d-flex justify-content-between align-items-center mb-3">
-//         <h4>Historial de Ventas</h4>
+  const VentaCard = ({ row, index }) => {
+    const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
 
-//         <CButton color="primary" onClick={() => navigate('/ventas')}>
-//           Nueva venta
-//         </CButton>
-//       </div>
+    return (
+      <CCard className="mb-3 shadow-sm border-0" style={{ borderRadius: 14 }}>
+        <CCardBody className="p-3">
+          {/* Header */}
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
+              #{index + 1} · {row.codigo}
+            </span>
 
-//       <CCard>
-//         <CCardBody>
-//           {cargando ? (
-//             <div className="text-center p-4">
-//               <CSpinner color="primary" />
-//             </div>
-//           ) : ventas.length === 0 ? (
-//             <div className="text-center text-muted p-4">No existen ventas registradas</div>
-//           ) : (
-//             <SmartTable columns={columns} data={ventas} pageSize={10} />
-//           )}
-//         </CCardBody>
-//       </CCard>
-//     </>
-//   )
-return (
+            <CBadge
+              color={row.estado === 'ANULADA' ? 'danger' : row.saldo > 0 ? 'warning' : 'success'}
+            >
+              {row.estado === 'ANULADA' ? 'Anulada' : row.saldo > 0 ? 'Pendiente' : 'Pagado'}
+            </CBadge>
+          </div>
+
+          {/* Fecha */}
+          <div className="text-muted mb-2" style={{ fontSize: '0.8rem' }}>
+            {new Date(row.fecha).toLocaleString()}
+          </div>
+
+          {/* Cliente + Tipo */}
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <span style={{ fontSize: '0.85rem' }}>{esGeneral ? 'General' : row.cliente}</span>
+
+            <CBadge
+              color={
+                row.tipo_pago === 'EFECTIVO'
+                  ? 'success'
+                  : row.tipo_pago === 'TRANSFERENCIA'
+                    ? 'info'
+                    : 'warning'
+              }
+            >
+              {row.tipo_pago}
+            </CBadge>
+          </div>
+
+          {/* Total */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <span className="text-muted" style={{ fontSize: '0.8rem' }}>
+              Total
+            </span>
+            <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
+              Bs {Number(row.total).toFixed(2)}
+            </span>
+          </div>
+
+          <CButton size="sm" color="primary" className="w-100" onClick={() => descargarPDF(row)}>
+            Ver PDF
+          </CButton>
+        </CCardBody>
+      </CCard>
+    )
+  }
+
+  return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4 className="mb-0">
-          Historial de Ventas
-        </h4>
+        <h4 className="mb-0">Historial de Ventas</h4>
 
         <CButton color="primary" onClick={() => navigate('/ventas')}>
           Nueva venta
@@ -186,9 +229,7 @@ return (
               🏢
             </div>
 
-            <h5 className="fw-semibold mb-2">
-              Seleccione una sucursal para ver las ventas.
-            </h5>
+            <h5 className="fw-semibold mb-2">Seleccione una sucursal para ver las ventas.</h5>
           </CCardBody>
         </CCard>
       ) : (
@@ -199,15 +240,22 @@ return (
                 <CSpinner color="primary" />
               </div>
             ) : ventas.length === 0 ? (
-              <div className="text-center text-muted p-4">
-                No existen ventas registradas
-              </div>
+              <div className="text-center text-muted p-4">No existen ventas registradas</div>
             ) : (
-              <SmartTable
-                columns={columns}
-                data={ventas}
-                pageSize={10}
-              />
+              //   <SmartTable columns={columns} data={ventas} pageSize={10} />
+              <>
+                {/* 📱 Mobile */}
+                <div className="d-md-none">
+                  {ventas.map((venta, index) => (
+                    <VentaCard key={venta.id} row={venta} index={index} />
+                  ))}
+                </div>
+
+                {/* 🖥 Desktop */}
+                <div className="d-none d-md-block">
+                  <SmartTable columns={columns} data={ventas} pageSize={10} />
+                </div>
+              </>
             )}
           </CCardBody>
         </CCard>

@@ -346,12 +346,13 @@ const POSPage = () => {
 
                   <CButton
                     size="sm"
-                    color="light"
+                    color="primary"
+                    variant="ghost"
                     className="px-2 py-1"
-                    onClick={() => navigate('/ventas')}
+                    onClick={() => navigate('/historialventas')}
                     style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 500,
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
                     }}
                   >
                     Ver ventas recientes

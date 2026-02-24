@@ -133,6 +133,23 @@ const Dashboard = () => {
           </CCard>
         </CCol>
 
+        {/* 📆 Venta Semana */}
+        <CCol sm={6} lg={3}>
+          <CCard className="mb-4 text-white bg-success">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <CCardText>Venta Semana</CCardText>
+                  <CCardTitle className="fs-4 fw-bold">
+                    {formatearMoneda(data.ventaSemana)}
+                  </CCardTitle>
+                </div>
+                <CIcon icon={cilChartLine} size="xl" />
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+
         {/* 📅 Venta Mes */}
         <CCol sm={6} lg={3}>
           <CCard className="mb-4 text-white bg-info">
@@ -143,23 +160,6 @@ const Dashboard = () => {
                   <CCardTitle className="fs-4 fw-bold">{formatearMoneda(data.ventaMes)}</CCardTitle>
                 </div>
                 <CIcon icon={cilCart} size="xl" />
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-
-        {/* 📦 Inventario */}
-        <CCol sm={6} lg={3}>
-          <CCard className="mb-4 text-white bg-dark">
-            <CCardBody>
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <CCardText>Inventario Valorizado</CCardText>
-                  <CCardTitle className="fs-4 fw-bold">
-                    {formatearMoneda(data.inventarioValorizado)}
-                  </CCardTitle>
-                </div>
-                <CIcon icon={cilLayers} size="xl" />
               </div>
             </CCardBody>
           </CCard>
@@ -190,6 +190,23 @@ const Dashboard = () => {
                   </CCardTitle>
                 </div>
                 <CIcon icon={cilWarning} size="xl" className="text-danger" />
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+
+        {/* 📦 Inventario */}
+        <CCol sm={6} lg={3}>
+          <CCard className="mb-4 text-white bg-dark">
+            <CCardBody>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <CCardText>Inventario Valorizado</CCardText>
+                  <CCardTitle className="fs-4 fw-bold">
+                    {formatearMoneda(data.inventarioValorizado)}
+                  </CCardTitle>
+                </div>
+                <CIcon icon={cilLayers} size="xl" />
               </div>
             </CCardBody>
           </CCard>

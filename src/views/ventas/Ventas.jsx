@@ -362,11 +362,10 @@ const Ventas = () => {
         <CModalHeader>
           <CModalTitle style={{ fontSize: '1rem' }}>Detalle de Venta</CModalTitle>
         </CModalHeader>
-
         <CModalBody>
           {ventaSeleccionada && (
             <>
-              {/* ================= HEADER ================= */}
+              {/* HEADER */}
               <div className="mb-3">
                 <div className="fw-semibold">{ventaSeleccionada.codigo}</div>
 
@@ -386,59 +385,47 @@ const Ventas = () => {
 
               <div className="d-flex justify-content-between mb-3">
                 <span className="text-muted">Tipo pago</span>
-                <CBadge
-                  color={
-                    ventaSeleccionada.tipo_pago === 'EFECTIVO'
-                      ? 'success'
-                      : ventaSeleccionada.tipo_pago === 'TRANSFERENCIA'
-                        ? 'info'
-                        : 'warning'
-                  }
-                >
-                  {ventaSeleccionada.tipo_pago}
-                </CBadge>
+                <CBadge color="success">{ventaSeleccionada.tipo_pago}</CBadge>
               </div>
 
-              <hr />
+              <div className="border-top my-3" style={{ opacity: 0.2 }} />
 
-              {/* ================= PRODUCTOS ================= */}
-              <div className="mb-3">
-                {ventaSeleccionada.productos.length === 0 ? (
-                  <div className="text-muted text-center py-2">Sin productos</div>
-                ) : (
-                  ventaSeleccionada.productos.map((item, i) => (
-                    <div key={i} className="mb-2">
-                      {/* Nombre */}
-                      <div style={{ fontSize: '0.9rem' }}>{item.producto}</div>
-
-                      {/* Cantidad x Precio */}
-                      <div
-                        className="d-flex justify-content-between text-muted"
-                        style={{ fontSize: '0.8rem' }}
-                      >
-                        <span>
-                          {item.cantidad} x Bs {Number(item.precio_unitario).toFixed(2)}
-                        </span>
-                        <span>Bs {Number(item.subtotal).toFixed(2)}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
+              {/* PRODUCTOS */}
+              <div className="text-muted mb-2" style={{ fontSize: '0.75rem', letterSpacing: 1 }}>
+                PRODUCTOS
               </div>
 
-              <hr />
+              {ventaSeleccionada.productos.map((item, i) => (
+                <div key={i} className="mb-3">
+                  <div style={{ fontSize: '0.9rem' }}>
+                    {i + 1}. {item.producto}
+                  </div>
 
-              {/* ================= TOTAL ================= */}
-              <div className="d-flex justify-content-between">
+                  <div
+                    className="d-flex justify-content-between text-muted"
+                    style={{ fontSize: '0.8rem' }}
+                  >
+                    <span>
+                      {item.cantidad} x Bs {Number(item.precio_unitario).toFixed(2)}
+                    </span>
+
+                    <span>Bs {Number(item.subtotal).toFixed(2)}</span>
+                  </div>
+                </div>
+              ))}
+
+              <div className="border-top my-3" style={{ opacity: 0.2 }} />
+
+              {/* TOTAL */}
+              <div className="d-flex justify-content-between align-items-center">
                 <span className="fw-semibold">Total</span>
-                <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
+                <span className="fw-bold" style={{ fontSize: '1.3rem' }}>
                   Bs {Number(ventaSeleccionada.total).toFixed(2)}
                 </span>
               </div>
             </>
           )}
         </CModalBody>
-
         <CModalFooter className="d-flex justify-content-between">
           <CButton color="light" onClick={() => setVentaSeleccionada(null)}>
             Cerrar

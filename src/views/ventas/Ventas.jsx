@@ -172,14 +172,9 @@ return (
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4 className="mb-0">
           Historial de Ventas
-          {sucursalActiva && (
-            <span className="text-muted ms-2 fs-6">
-              - Sucursal activa
-            </span>
-          )}
         </h4>
 
-        <CButton color="primary" onClick={() => navigate('/ventas/nuevo')}>
+        <CButton color="primary" onClick={() => navigate('/ventas')}>
           Nueva venta
         </CButton>
       </div>

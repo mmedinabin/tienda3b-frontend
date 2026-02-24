@@ -8,10 +8,12 @@ import Select from 'react-select'
 import { productosService } from '../../services/productos.service'
 import { ventasService } from '../../services/ventas.service'
 import { clientesService } from '../../services/clientes.service'
+import { useNavigate } from 'react-router-dom'
 
 const POSPage = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
+  const navigate = useNavigate()
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768)
@@ -338,8 +340,25 @@ const POSPage = () => {
           <CCardBody>
             {isMobile ? (
               <div className="mb-3">
-                <label className="form-label fw-semibold">Buscar producto</label>
+                {/* Línea superior */}
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <label className="form-label fw-semibold mb-0">Buscar producto</label>
 
+                  <CButton
+                    size="sm"
+                    color="light"
+                    className="px-2 py-1"
+                    onClick={() => navigate('/ventas')}
+                    style={{
+                      fontSize: '0.8rem',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Ver ventas recientes
+                  </CButton>
+                </div>
+
+                {/* Select */}
                 <Select
                   options={productos.map((p) => ({
                     value: p.id,
@@ -352,6 +371,20 @@ const POSPage = () => {
                   }}
                   isSearchable
                 />
+                {/* <label className="form-label fw-semibold">Buscar producto</label>
+
+                <Select
+                  options={productos.map((p) => ({
+                    value: p.id,
+                    label: `${p.marca ? p.marca + ' - ' : ''}${p.nombre}${p.descripcion ? ' - ' + p.descripcion : ''} | Bs ${p.precio_venta}`,
+                  }))}
+                  placeholder="Escribe para buscar..."
+                  onChange={(selected) => {
+                    const producto = productos.find((p) => p.id === selected.value)
+                    if (producto) agregarProducto(producto)
+                  }}
+                  isSearchable
+                /> */}
               </div>
             ) : (
               <div className="position-relative mb-3">

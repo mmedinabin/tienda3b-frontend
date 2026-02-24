@@ -49,16 +49,35 @@ const Ventas = () => {
     cargarVentas()
   }, [sucursalActiva])
 
+  //   const cargarVentas = async () => {
+  //     try {
+  //       const { data } = await ventasService.listar()
+  //       setVentas(data)
+  //     } catch (error) {
+  //       console.error(error)
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Error cargando ventas',
+  //       })
+  //     } finally {
+  //       setCargando(false)
+  //     }
+  //   }
   const cargarVentas = async () => {
     try {
       const { data } = await ventasService.listar()
+
+      console.log(
+        data.map((v) => ({
+          id: v.id,
+          codigo: v.codigo,
+          fecha: v.fecha,
+        })),
+      )
+
       setVentas(data)
     } catch (error) {
       console.error(error)
-      Swal.fire({
-        icon: 'error',
-        title: 'Error cargando ventas',
-      })
     } finally {
       setCargando(false)
     }

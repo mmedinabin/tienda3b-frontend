@@ -157,7 +157,13 @@ const Ventas = () => {
     const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
 
     return (
-      <CCard className="mb-3 shadow-sm border-0" style={{ borderRadius: 14 }}>
+      <CCard
+        className="mb-3 shadow-sm"
+        style={{
+          borderRadius: 14,
+          border: '1px solid #e5e7eb',
+        }}
+      >
         <CCardBody className="p-3">
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center mb-2">

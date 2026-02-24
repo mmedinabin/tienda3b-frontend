@@ -36,7 +36,6 @@ const Ventas = () => {
   }, [])
 
   const [ventaSeleccionada, setVentaSeleccionada] = useState(null)
-
   const abrirDetalle = (venta) => {
     setVentaSeleccionada(venta)
   }
@@ -367,7 +366,7 @@ const Ventas = () => {
         <CModalBody>
           {ventaSeleccionada && (
             <>
-              {/* Encabezado */}
+              {/* ================= HEADER ================= */}
               <div className="mb-3">
                 <div className="fw-semibold">{ventaSeleccionada.codigo}</div>
 
@@ -378,26 +377,63 @@ const Ventas = () => {
 
               <div className="d-flex justify-content-between mb-2">
                 <span className="text-muted">Cliente</span>
-                <span>{ventaSeleccionada.cliente || 'General'}</span>
+                <span>
+                  {ventaSeleccionada.cliente === 'SIN NOMBRE'
+                    ? 'General'
+                    : ventaSeleccionada.cliente}
+                </span>
               </div>
 
               <div className="d-flex justify-content-between mb-3">
                 <span className="text-muted">Tipo pago</span>
-                <CBadge color="success">{ventaSeleccionada.tipo_pago}</CBadge>
+                <CBadge
+                  color={
+                    ventaSeleccionada.tipo_pago === 'EFECTIVO'
+                      ? 'success'
+                      : ventaSeleccionada.tipo_pago === 'TRANSFERENCIA'
+                        ? 'info'
+                        : 'warning'
+                  }
+                >
+                  {ventaSeleccionada.tipo_pago}
+                </CBadge>
               </div>
 
               <hr />
 
-              {/* Aquí luego productos */}
-              <div className="text-muted text-center py-3">
-                Aquí se mostrará el detalle de productos
+              {/* ================= PRODUCTOS ================= */}
+              <div className="mb-3">
+                {ventaSeleccionada.productos.length === 0 ? (
+                  <div className="text-muted text-center py-2">Sin productos</div>
+                ) : (
+                  ventaSeleccionada.productos.map((item, i) => (
+                    <div key={i} className="mb-2">
+                      {/* Nombre */}
+                      <div style={{ fontSize: '0.9rem' }}>{item.producto}</div>
+
+                      {/* Cantidad x Precio */}
+                      <div
+                        className="d-flex justify-content-between text-muted"
+                        style={{ fontSize: '0.8rem' }}
+                      >
+                        <span>
+                          {item.cantidad} x Bs {Number(item.precio_unitario).toFixed(2)}
+                        </span>
+                        <span>Bs {Number(item.subtotal).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               <hr />
 
+              {/* ================= TOTAL ================= */}
               <div className="d-flex justify-content-between">
-                <span>Total</span>
-                <span className="fw-bold">Bs {Number(ventaSeleccionada.total).toFixed(2)}</span>
+                <span className="fw-semibold">Total</span>
+                <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
+                  Bs {Number(ventaSeleccionada.total).toFixed(2)}
+                </span>
               </div>
             </>
           )}

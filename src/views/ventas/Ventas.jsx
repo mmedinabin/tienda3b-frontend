@@ -98,7 +98,15 @@ const Ventas = () => {
     {
       key: 'fecha',
       label: 'Fecha y Hora',
-      render: (row) => new Date(row.fecha).toLocaleString(),
+      render: (row) =>
+        new Date(row.fecha).toLocaleString('es-BO', {
+          timeZone: 'America/La_Paz',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
     },
     {
       key: 'cliente',

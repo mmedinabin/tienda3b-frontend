@@ -13,12 +13,12 @@ const Ventas = () => {
 
   const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
 
-  //   useEffect(() => {
-  //     cargarVentas()
-  //   }, [])
-
   useEffect(() => {
     if (!sucursalActiva) return
+
+    setCargando(true)
+    setVentas([])
+
     cargarVentas()
   }, [sucursalActiva])
 
@@ -142,29 +142,81 @@ const Ventas = () => {
     },
   ]
 
-  return (
+//   return (
+//     <>
+//       <div className="d-flex justify-content-between align-items-center mb-3">
+//         <h4>Historial de Ventas</h4>
+
+//         <CButton color="primary" onClick={() => navigate('/ventas')}>
+//           Nueva venta
+//         </CButton>
+//       </div>
+
+//       <CCard>
+//         <CCardBody>
+//           {cargando ? (
+//             <div className="text-center p-4">
+//               <CSpinner color="primary" />
+//             </div>
+//           ) : ventas.length === 0 ? (
+//             <div className="text-center text-muted p-4">No existen ventas registradas</div>
+//           ) : (
+//             <SmartTable columns={columns} data={ventas} pageSize={10} />
+//           )}
+//         </CCardBody>
+//       </CCard>
+//     </>
+//   )
+return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4>Historial de Ventas</h4>
+        <h4 className="mb-0">
+          Historial de Ventas
+          {sucursalActiva && (
+            <span className="text-muted ms-2 fs-6">
+              - Sucursal activa
+            </span>
+          )}
+        </h4>
 
-        <CButton color="primary" onClick={() => navigate('/ventas')}>
+        <CButton color="primary" onClick={() => navigate('/ventas/nuevo')}>
           Nueva venta
         </CButton>
       </div>
 
-      <CCard>
-        <CCardBody>
-          {cargando ? (
-            <div className="text-center p-4">
-              <CSpinner color="primary" />
+      {!sucursalActiva ? (
+        <CCard>
+          <CCardBody className="text-center py-5">
+            <div className="mb-3" style={{ fontSize: '2rem' }}>
+              🏢
             </div>
-          ) : ventas.length === 0 ? (
-            <div className="text-center text-muted p-4">No existen ventas registradas</div>
-          ) : (
-            <SmartTable columns={columns} data={ventas} pageSize={10} />
-          )}
-        </CCardBody>
-      </CCard>
+
+            <h5 className="fw-semibold mb-2">
+              Seleccione una sucursal para ver las ventas.
+            </h5>
+          </CCardBody>
+        </CCard>
+      ) : (
+        <CCard>
+          <CCardBody>
+            {cargando ? (
+              <div className="text-center p-4">
+                <CSpinner color="primary" />
+              </div>
+            ) : ventas.length === 0 ? (
+              <div className="text-center text-muted p-4">
+                No existen ventas registradas
+              </div>
+            ) : (
+              <SmartTable
+                columns={columns}
+                data={ventas}
+                pageSize={10}
+              />
+            )}
+          </CCardBody>
+        </CCard>
+      )}
     </>
   )
 }

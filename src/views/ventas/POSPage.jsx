@@ -9,8 +9,11 @@ import { productosService } from '../../services/productos.service'
 import { ventasService } from '../../services/ventas.service'
 import { clientesService } from '../../services/clientes.service'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/auth.store'
 
 const POSPage = () => {
+  const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
   const navigate = useNavigate()
@@ -33,10 +36,16 @@ const POSPage = () => {
   const [montoRecibido, setMontoRecibido] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // useEffect(() => {
+  //   cargarProductos()
+  //   cargarClientes()
+  // }, [])
+
   useEffect(() => {
+    if (!sucursalActiva) return
     cargarProductos()
     cargarClientes()
-  }, [])
+  }, [sucursalActiva])
 
   const cargarProductos = async () => {
     const res = await productosService.listarPOS()

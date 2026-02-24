@@ -168,6 +168,16 @@ const Dashboard = () => {
 
       {/* 🔵 Segunda fila */}
       <CRow>
+        {/* 🧾 Tickets Hoy */}
+        <CCol sm={6} lg={4}>
+          <CCard className="mb-4 border-start border-start-4 border-start-primary">
+            <CCardBody>
+              <CCardText>Tickets Hoy</CCardText>
+              <CCardTitle className="fs-4 fw-bold">{data.ticketsHoy}</CCardTitle>
+            </CCardBody>
+          </CCard>
+        </CCol>
+
         {/* 📦 Inventario */}
         <CCol sm={6} lg={4}>
           <CCard className="mb-4 border-start border-start-4 border-start-secondary shadow-sm">
@@ -181,15 +191,6 @@ const Dashboard = () => {
                 </div>
                 <CIcon icon={cilLayers} size="xl" className="text-secondary" />
               </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        {/* 🧾 Tickets Hoy */}
-        <CCol sm={6} lg={4}>
-          <CCard className="mb-4 border-start border-start-4 border-start-primary">
-            <CCardBody>
-              <CCardText>Tickets Hoy</CCardText>
-              <CCardTitle className="fs-4 fw-bold">{data.ticketsHoy}</CCardTitle>
             </CCardBody>
           </CCard>
         </CCol>

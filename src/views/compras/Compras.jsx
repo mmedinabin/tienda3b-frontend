@@ -47,20 +47,6 @@ const Compras = () => {
 
     cargarCompras()
   }, [sucursalActiva])
-  // useEffect(() => {
-  //   const cargarCompras = async () => {
-  //     try {
-  //       const { data } = await comprasService.listar()
-  //       setCompras(data)
-  //     } catch (error) {
-  //       console.error('Error cargando compras')
-  //     } finally {
-  //       setCargando(false)
-  //     }
-  //   }
-
-  //   cargarCompras()
-  // }, [])
 
   const columns = [
     {

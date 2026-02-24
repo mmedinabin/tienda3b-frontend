@@ -36,11 +36,6 @@ const POSPage = () => {
   const [montoRecibido, setMontoRecibido] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // useEffect(() => {
-  //   cargarProductos()
-  //   cargarClientes()
-  // }, [])
-
   useEffect(() => {
     if (!sucursalActiva) {
       setProductos([])
@@ -56,7 +51,6 @@ const POSPage = () => {
         await cargarProductos()
         await cargarClientes()
 
-        // ⚠️ Limpia carrito cuando cambia sucursal
         setCarrito([])
       } catch (error) {
         console.error('Error recargando POS')

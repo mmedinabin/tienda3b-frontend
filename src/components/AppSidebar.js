@@ -15,6 +15,9 @@ import { AppSidebarNav } from './AppSidebarNav'
 
 import { logo } from 'src/assets/brand/logo'
 import { sygnet } from 'src/assets/brand/sygnet'
+import { usePermiso } from 'src/hooks/usePermiso'
+//import { useAuthStore } from '../../store/auth.store'
+import { useAuthStore } from 'src/store/auth.store'
 
 // sidebar nav config
 import navigation from '../_nav'
@@ -23,6 +26,29 @@ const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const { puedeVer } = usePermiso()
+  const user = useAuthStore((state) => state.user)
+
+  const filterNav = (items) => {
+    return items
+      .map((item) => {
+        if (user?.rol === 'ADMIN') return item
+
+        if (item.items) {
+          const filteredChildren = filterNav(item.items)
+          if (filteredChildren.length === 0) return null
+          return { ...item, items: filteredChildren }
+        }
+
+        if (!item.permiso) return item
+
+        return puedeVer(item.permiso.toUpperCase()) ? item : null
+      })
+      .filter(Boolean)
+  }
+
+  const filteredNavigation = filterNav(navigation)
 
   return (
     <CSidebar
@@ -46,7 +72,8 @@ const AppSidebar = () => {
           onClick={() => dispatch({ type: 'set', sidebarShow: false })}
         />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation} />
+      {/* <AppSidebarNav items={navigation} /> */}
+      <AppSidebarNav items={filteredNavigation} />
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}

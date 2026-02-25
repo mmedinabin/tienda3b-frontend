@@ -22,7 +22,11 @@ const Ventas = () => {
   const [ventas, setVentas] = useState([])
   const [cargando, setCargando] = useState(true)
 
+  const permisos = useAuthStore((state) => state.permisos)
+  const puedeAnular = permisos?.some((p) => p.clave === 'VENTAS' && p.puede_eliminar === 1)
+
   const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
+  const puedeOperar = !!sucursalActiva
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
@@ -41,22 +45,30 @@ const Ventas = () => {
   }
 
   useEffect(() => {
-    if (!sucursalActiva) return
+    const cargar = async () => {
+      try {
+        setCargando(true)
+        setVentas([])
 
-    setCargando(true)
-    setVentas([])
+        await cargarVentas()
+      } catch (error) {
+        console.error('Error cargando ventas', error)
+        setVentas([])
+      } finally {
+        setCargando(false)
+      }
+    }
 
-    cargarVentas()
+    cargar()
   }, [sucursalActiva])
 
   const cargarVentas = async () => {
     try {
       const { data } = await ventasService.listar()
-      setVentas(data)
+      setVentas(data.data ?? data)
     } catch (error) {
-      console.error(error)
-    } finally {
-      setCargando(false)
+      console.error('Error cargando ventas', error)
+      setVentas([])
     }
   }
 
@@ -89,6 +101,70 @@ const Ventas = () => {
     }
   }
 
+  // const handleAnular = async (venta) => {
+  //   const { value: motivo } = await Swal.fire({
+  //     title: 'Anular venta',
+  //     input: 'text',
+  //     inputLabel: 'Motivo de anulación',
+  //     inputPlaceholder: 'Ej: Producto defectuoso',
+  //     inputValidator: (value) => {
+  //       if (!value) return 'Debe ingresar un motivo'
+  //     },
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#d33',
+  //     confirmButtonText: 'Anular',
+  //   })
+
+  //   if (!motivo) return
+
+  //   try {
+  //     await ventasService.anular(venta.id, motivo)
+
+  //     Swal.fire('Correcto', 'Venta anulada correctamente', 'success')
+
+  //     await cargarVentas()
+  //     setVentaSeleccionada(null)
+  //   } catch (error) {
+  //     console.log(error.response?.data)
+  //     Swal.fire('Error', error.response?.data?.message || 'Error al anular venta', 'error')
+  //   }
+  // }
+  const handleAnular = async (venta) => {
+    const { value: motivo } = await Swal.fire({
+      title: 'Anular venta',
+      input: 'text',
+      inputLabel: 'Motivo de anulación',
+      inputPlaceholder: 'Ej: Producto defectuoso',
+      inputValidator: (value) => {
+        if (!value) return 'Debe ingresar un motivo'
+      },
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Anular',
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+
+      preConfirm: async (motivo) => {
+        try {
+          await ventasService.anular(venta.id, motivo)
+          return true
+        } catch (error) {
+          Swal.showValidationMessage(error.response?.data?.message || 'Error al anular')
+        }
+      },
+    })
+
+    if (motivo) {
+      await cargarVentas()
+      setVentaSeleccionada(null) // 👈 cerrar modal
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Venta anulada correctamente',
+      })
+    }
+  }
+
   const columns = [
     {
       key: 'codigo',
@@ -106,6 +182,7 @@ const Ventas = () => {
           year: 'numeric',
           hour: '2-digit',
           minute: '2-digit',
+          hour12: false, // 🔥 esto fuerza formato 24h
         }),
     },
     {
@@ -162,90 +239,45 @@ const Ventas = () => {
           <CBadge color="success">Pagado</CBadge>
         ),
     },
+    // {
+    //   key: 'acciones',
+    //   label: '',
+    //   render: (row) => (
+    //     <CButton size="sm" color="info" onClick={() => descargarPDF(row)}>
+    //       Ver PDF
+    //     </CButton>
+    //   ),
+    // },
     {
       key: 'acciones',
       label: '',
       render: (row) => (
-        <CButton size="sm" color="info" onClick={() => descargarPDF(row)}>
-          Ver PDF
-        </CButton>
+        <div className="d-flex gap-2">
+          <CButton size="sm" color="info" onClick={() => descargarPDF(row)}>
+            PDF
+          </CButton>
+
+          {puedeOperar && puedeAnular && row.estado !== 'ANULADA' && (
+            <CButton size="sm" color="danger" onClick={() => handleAnular(row)}>
+              Anular
+            </CButton>
+          )}
+        </div>
       ),
     },
   ]
 
-  //   const VentaCard = ({ row, index }) => {
-  //     const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
-
-  //     return (
-  //       <CCard
-  //         className="mb-3 shadow-sm"
-  //         style={{
-  //           borderRadius: 14,
-  //           border: '1px solid #e5e7eb',
-  //         }}
-  //       >
-  //         <CCardBody className="p-3">
-  //           {/* Header */}
-  //           <div className="d-flex justify-content-between align-items-center mb-2">
-  //             <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
-  //               #{index + 1} · {row.codigo}
-  //             </span>
-
-  //             <CBadge
-  //               color={row.estado === 'ANULADA' ? 'danger' : row.saldo > 0 ? 'warning' : 'success'}
-  //             >
-  //               {row.estado === 'ANULADA' ? 'Anulada' : row.saldo > 0 ? 'Pendiente' : 'Pagado'}
-  //             </CBadge>
-  //           </div>
-
-  //           {/* Fecha */}
-  //           <div className="text-muted mb-2" style={{ fontSize: '0.8rem' }}>
-  //             {new Date(row.fecha).toLocaleString()}
-  //           </div>
-
-  //           {/* Cliente + Tipo */}
-  //           <div className="d-flex justify-content-between align-items-center mb-2">
-  //             <span style={{ fontSize: '0.85rem' }}>{esGeneral ? 'General' : row.cliente}</span>
-
-  //             <CBadge
-  //               color={
-  //                 row.tipo_pago === 'EFECTIVO'
-  //                   ? 'success'
-  //                   : row.tipo_pago === 'TRANSFERENCIA'
-  //                     ? 'info'
-  //                     : 'warning'
-  //               }
-  //             >
-  //               {row.tipo_pago}
-  //             </CBadge>
-  //           </div>
-
-  //           {/* Total */}
-  //           <div className="d-flex justify-content-between align-items-center mb-3">
-  //             <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-  //               Total
-  //             </span>
-  //             <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
-  //               Bs {Number(row.total).toFixed(2)}
-  //             </span>
-  //           </div>
-
-  //           <CButton size="sm" color="primary" className="w-100" onClick={() => descargarPDF(row)}>
-  //             Ver PDF
-  //           </CButton>
-  //         </CCardBody>
-  //       </CCard>
-  //     )
-  //   }
   const VentaCard = ({ row, index }) => {
     const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
 
     return (
       <CCard
-        className="mb-3 shadow-sm"
+        className="mb-3"
         style={{
-          borderRadius: 14,
-          border: '1px solid #e5e7eb',
+          backgroundColor: '#f8f9fb',
+          borderRadius: '20px',
+          border: '1px solid #dee0e0', // 👈 contorno delgado
+          boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
         }}
       >
         <CCardBody className="p-3">
@@ -317,45 +349,31 @@ const Ventas = () => {
           Nueva venta
         </CButton>
       </div>
-
-      {!sucursalActiva ? (
-        <CCard>
-          <CCardBody className="text-center py-5">
-            <div className="mb-3" style={{ fontSize: '2rem' }}>
-              🏢
+      <CCard>
+        <CCardBody>
+          {cargando ? (
+            <div className="text-center p-4">
+              <CSpinner color="primary" />
             </div>
-
-            <h5 className="fw-semibold mb-2">Seleccione una sucursal para ver las ventas.</h5>
-          </CCardBody>
-        </CCard>
-      ) : (
-        <CCard>
-          <CCardBody>
-            {cargando ? (
-              <div className="text-center p-4">
-                <CSpinner color="primary" />
+          ) : ventas.length === 0 ? (
+            <div className="text-center text-muted p-4">No existen ventas registradas</div>
+          ) : (
+            <>
+              {/* 📱 Mobile */}
+              <div className="d-md-none">
+                {ventas.map((venta, index) => (
+                  <VentaCard key={venta.id} row={venta} index={index} />
+                ))}
               </div>
-            ) : ventas.length === 0 ? (
-              <div className="text-center text-muted p-4">No existen ventas registradas</div>
-            ) : (
-              //   <SmartTable columns={columns} data={ventas} pageSize={10} />
-              <>
-                {/* 📱 Mobile */}
-                <div className="d-md-none">
-                  {ventas.map((venta, index) => (
-                    <VentaCard key={venta.id} row={venta} index={index} />
-                  ))}
-                </div>
 
-                {/* 🖥 Desktop */}
-                <div className="d-none d-md-block">
-                  <SmartTable columns={columns} data={ventas} pageSize={10} />
-                </div>
-              </>
-            )}
-          </CCardBody>
-        </CCard>
-      )}
+              {/* 🖥 Desktop */}
+              <div className="d-none d-md-block">
+                <SmartTable columns={columns} data={ventas} pageSize={10} />
+              </div>
+            </>
+          )}
+        </CCardBody>
+      </CCard>
 
       <CModal
         visible={!!ventaSeleccionada}
@@ -435,11 +453,19 @@ const Ventas = () => {
             Cerrar
           </CButton>
 
-          {ventaSeleccionada && (
-            <CButton color="primary" onClick={() => descargarPDF(ventaSeleccionada)}>
-              Descargar PDF
-            </CButton>
-          )}
+          <div className="d-flex gap-2">
+            {ventaSeleccionada && puedeOperar && puedeAnular && ventaSeleccionada.estado !== 'ANULADA' && (
+              <CButton color="danger" onClick={() => handleAnular(ventaSeleccionada)}>
+                Anular
+              </CButton>
+            )}
+
+            {ventaSeleccionada && (
+              <CButton color="primary" onClick={() => descargarPDF(ventaSeleccionada)}>
+                Descargar PDF
+              </CButton>
+            )}
+          </div>
         </CModalFooter>
       </CModal>
     </>

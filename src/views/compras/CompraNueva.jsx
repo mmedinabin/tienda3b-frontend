@@ -164,19 +164,23 @@ const CompraNueva = () => {
 
   useEffect(() => {
     const cargarProductos = async () => {
-      const { data } = await productosService.listar()
+      const res = await productosService.listar()
+
+      const lista = Array.isArray(res.data) ? res.data : res.data?.data || []
+
       setProductos(
-        data
+        lista
           .filter((p) => p.estado === 1)
           .map((p) => ({
             value: p.id,
             label: `${p.marca ? p.marca + ' ' : ''}${p.nombre}${p.descripcion ? ' ' + p.descripcion : ''}`,
-            precio_venta: p.precio_venta,
+            precio_venta: Number(p.precio_venta),
             unidad_medida: p.unidad_medida,
             tipo_presentacion: p.tipo_presentacion,
           })),
       )
     }
+
     cargarProductos()
   }, [])
 

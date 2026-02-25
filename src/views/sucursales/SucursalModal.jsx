@@ -49,7 +49,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
       try {
         const res = await ciudadesService.listar()
 
-        const opciones = res.data.map(c => ({
+        const opciones = res.data.map((c) => ({
           value: c.id,
           label: c.nombre,
         }))
@@ -78,7 +78,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
@@ -88,7 +88,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
     if (!option) {
       setSelectedCiudad(null)
       setEsNuevaCiudad(false)
-      setForm(prev => ({ ...prev, ciudad_id: null }))
+      setForm((prev) => ({ ...prev, ciudad_id: null }))
       return
     }
 
@@ -96,7 +96,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
       setEsNuevaCiudad(true)
       setSelectedCiudad({ label: option.label })
 
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
         ciudad_id: null,
         nuevaCiudadNombre: option.label,
@@ -105,7 +105,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
       setEsNuevaCiudad(false)
       setSelectedCiudad(option)
 
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
         ciudad_id: option.value,
         nuevaCiudadNombre: '',
@@ -137,10 +137,16 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
         const ciudadesActualizadas = await ciudadesService.listar()
 
         const creada = ciudadesActualizadas.data.find(
-          c => c.nombre.toLowerCase() === form.nuevaCiudadNombre.toLowerCase()
+          (c) => c.nombre.toLowerCase() === form.nuevaCiudadNombre.toLowerCase(),
         )
 
-        ciudadIdFinal = creada.id
+        ciudadIdFinal = creada?.id
+      }
+
+      // 🔥 VALIDACIÓN QUE FALTABA
+      if (!ciudadIdFinal) {
+        alert('Debe seleccionar una ciudad')
+        return
       }
 
       if (!form.nombre) {
@@ -149,7 +155,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
       }
 
       onSave({
-        ciudad_id: ciudadIdFinal,
+        ciudad_id: Number(ciudadIdFinal),
         nombre: form.nombre,
         direccion: form.direccion,
         telefono: form.telefono,
@@ -157,7 +163,6 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
       })
 
       setForm(initialForm)
-
     } catch {
       alert('Error al procesar datos')
     }
@@ -170,12 +175,8 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
 
   return (
     <CModal visible={visible} onClose={handleClose} backdrop="static">
-
       {/* HEADER SOBRIO */}
-      <CModalHeader
-        className="border-bottom"
-        style={{ backgroundColor: '#f1f3f5' }}
-      >
+      <CModalHeader className="border-bottom" style={{ backgroundColor: '#f1f3f5' }}>
         <CModalTitle className="fw-semibold">
           {form.id ? 'Editar Sucursal' : 'Nueva Sucursal'}
         </CModalTitle>
@@ -183,7 +184,6 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
 
       <CForm onSubmit={handleSubmit}>
         <CModalBody className="pt-4">
-
           {!form.id && (
             <>
               <div className="mb-3">
@@ -194,9 +194,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
                   onChange={handleCiudadChange}
                   isClearable
                   placeholder="Escriba o seleccione ciudad..."
-                  formatCreateLabel={(inputValue) =>
-                    `Crear ciudad "${inputValue}"`
-                  }
+                  formatCreateLabel={(inputValue) => `Crear ciudad "${inputValue}"`}
                 />
               </div>
 
@@ -249,12 +247,10 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
               className="mt-2"
             />
           )}
-
         </CModalBody>
 
         {/* FOOTER LIMPIO */}
         <CModalFooter className="border-top pt-3 pb-3 d-flex justify-content-end">
-
           <CButton
             type="submit"
             color="primary"
@@ -268,11 +264,8 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
           >
             Guardar
           </CButton>
-
         </CModalFooter>
-
       </CForm>
-
     </CModal>
   )
 }

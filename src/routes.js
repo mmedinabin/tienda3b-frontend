@@ -66,7 +66,8 @@ const CompraNueva = React.lazy(() => import('./views/compras/CompraNueva'))
 const POSPage = React.lazy(() => import('./views/ventas/POSPage'))
 const Ventas = React.lazy(() => import('./views/ventas/Ventas'))
 const Stock = React.lazy(() => import('./views/stock/StockInventario'))
-const RptVentas= React.lazy(() => import('./views/reportes/RptVentas'))
+const RptVentas = React.lazy(() => import('./views/reportes/RptVentas'))
+const RptCompras = React.lazy(() => import('./views/reportes/RptCompras'))
 
 const NoAutorizado = React.lazy(() => import('./views/pages/NoAutorizado'))
 
@@ -74,10 +75,24 @@ const routes = [
   {
     path: '/',
     element: Dashboard,
+    modulo: 'DASHBOARD',
+    accion: 'ver',
+  },
+  {
+    path: '/dashboard',
+    element: Dashboard,
+    modulo: 'DASHBOARD',
+    accion: 'ver',
   },
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
-  { path: '/sucursales', name: 'Sucursales', element: Sucursales },
+  {
+    path: '/sucursales',
+    name: 'Sucursales',
+    element: Sucursales,
+    modulo: 'SUCURSALES',
+    accion: 'ver',
+  },
+
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
@@ -121,7 +136,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
- 
+
   {
     path: '/usuarios',
     name: 'Usuarios',
@@ -136,47 +151,75 @@ const routes = [
     path: '/clientes',
     name: 'Clientes',
     element: Clientes,
+    modulo: 'clientes',
+    accion: 'crear'
   },
   {
     path: '/proveedores',
     name: 'Proveedores',
     element: Proveedores,
+    modulo: 'proveedores',
+    accion: 'ver',
   },
   {
     path: '/productos',
     name: 'Productos',
     element: Productos,
+    modulo: 'productos',
+    accion: 'ver'
   },
-  { path: '/productos/nuevo', element: ProductoForm },
-  { path: '/productos/editar/:id', element: ProductoForm },
+  { path: '/productos/nuevo', element: ProductoForm, modulo: 'productos',
+    accion: 'crear'},
+  { path: '/productos/editar/:id', element: ProductoForm,  modulo: 'productos',
+    accion: 'editar' },
   {
     path: '/empleados',
     name: 'Empleados',
     element: Empleados,
+    modulo: 'empleados',
+    accion: 'ver'
   },
-  { path: '/empleados/nuevo', element: EmpleadoForm },
-  { path: '/empleados/editar/:id', element: EmpleadoForm },
+  { path: '/empleados/nuevo', element: EmpleadoForm, modulo: 'empleados',
+    accion: 'crear' },
+  { path: '/empleados/editar/:id', element: EmpleadoForm, modulo: 'empleados',
+    accion: 'editar' },
 
   {
     path: '/compras',
     name: 'Compras',
     element: Compras,
+    modulo: 'compras',
+    accion: 'ver'
   },
-  { path: '/compras/nuevo', element: CompraNueva },
+  { path: '/compras/nuevo', element: CompraNueva, modulo: 'compras',
+    accion: 'editar' },
   {
     path: '/ventas',
     name: 'Ventas',
     element: POSPage,
+    modulo: 'ventas',
+    accion: 'crear'
   },
-    {
+  {
     path: '/historialventas',
     name: 'Ventas',
     element: Ventas,
+    modulo: 'ventas',
+    accion: 'ver'
   },
-      {
+  {
     path: '/reportes/ventas',
     name: 'RptVentas',
     element: RptVentas,
+    modulo: 'reportes',
+    accion: 'ver',
+  },
+  {
+    path: '/reportes/compras',
+    name: 'RptCompras',
+    element: RptCompras,
+    modulo: 'reportes',
+    accion: 'ver',
   },
   {
     path: '/403',

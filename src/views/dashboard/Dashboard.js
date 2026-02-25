@@ -17,17 +17,15 @@ const Dashboard = () => {
      REACTIVO A CAMBIO DE SUCURSAL
   ============================== */
   useEffect(() => {
-    if (sucursalActiva === null) {
-      setModoGlobal(true)
-      setData(null)
-      setLoading(false)
-      return
-    }
+    const esGlobal = sucursalActiva === null
 
-    setModoGlobal(false)
+    setModoGlobal(esGlobal)
     setLoading(true)
+    setData(null)
+
     cargarDashboard()
   }, [sucursalActiva])
+
 
   /* =============================
      CARGAR DASHBOARD
@@ -70,18 +68,6 @@ const Dashboard = () => {
       <div className="text-center mt-5">
         <CSpinner color="primary" />
       </div>
-    )
-  }
-
-  // Modo global (sin sucursal)
-  if (modoGlobal) {
-    return (
-      <CCard className="text-center p-5">
-        <CCardBody>
-          <h4>Seleccione sucursal para ver reportes rápidos</h4>
-          <p className="text-medium-emphasis">El dashboard requiere una sucursal activa.</p>
-        </CCardBody>
-      </CCard>
     )
   }
 

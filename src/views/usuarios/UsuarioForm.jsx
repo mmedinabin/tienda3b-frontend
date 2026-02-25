@@ -71,7 +71,6 @@ const UsuarioForm = () => {
 
       const rol = roles.find((r) => r.id === newValue)
 
-      // Si deja de ser ADMIN, limpiar sucursal
       if (rol?.nombre !== 'ADMIN') {
         setForm((prev) => ({
           ...prev,
@@ -80,6 +79,10 @@ const UsuarioForm = () => {
         }))
         return
       }
+    }
+
+    if (name === 'sucursal_id') {
+      newValue = value === '' ? '' : Number(value)
     }
 
     setForm((prev) => ({
@@ -108,117 +111,245 @@ const UsuarioForm = () => {
     navigate('/usuarios')
   }
 
+  // return (
+  //   <CCard>
+  //     <CCardHeader>
+  //       <strong>{editando ? 'Editar Usuario' : 'Nuevo Usuario'}</strong>
+  //     </CCardHeader>
+
+  //     <CCardBody>
+  //       <CForm onSubmit={handleSubmit}>
+  //         <CFormInput
+  //           label="Username"
+  //           name="username"
+  //           value={form.username}
+  //           onChange={handleChange}
+  //           disabled={editando}
+  //           required
+  //         />
+
+  //         <CFormInput
+  //           label="Email"
+  //           name="email"
+  //           value={form.email}
+  //           onChange={handleChange}
+  //           disabled={editando}
+  //           required
+  //         />
+
+  //         <CFormInput
+  //           label="Nombre"
+  //           name="nombre"
+  //           value={form.nombre}
+  //           onChange={handleChange}
+  //           required
+  //         />
+
+  //         {!editando && (
+  //           <CFormInput
+  //             label="Password"
+  //             name="password"
+  //             type="password"
+  //             value={form.password}
+  //             onChange={handleChange}
+  //             required
+  //           />
+  //         )}
+
+  //         {/* ROL */}
+  //         <CFormSelect
+  //           label="Rol"
+  //           name="rol_id"
+  //           value={form.rol_id}
+  //           onChange={handleChange}
+  //           required
+  //         >
+  //           <option value="">Seleccione un rol</option>
+  //           {roles.map((r) => (
+  //             <option key={r.id} value={r.id}>
+  //               {r.nombre}
+  //             </option>
+  //           ))}
+  //         </CFormSelect>
+
+  //         {/* SUCURSAL */}
+
+  //         <CFormSelect
+  //           label="Sucursal"
+  //           name="sucursal_id"
+  //           value={form.sucursal_id ?? ''}
+  //           onChange={handleChange}
+  //           required={!esAdmin}
+  //         >
+  //           <option value="">Seleccione una sucursal</option>
+
+  //           {esAdmin && <option value="">Modo Global (solo ADMIN)</option>}
+
+  //           {sucursales.map((s) => (
+  //             <option key={s.id} value={s.id}>
+  //               [{s.codigo_sucursal}] {s.ciudad} - {s.nombre}
+  //             </option>
+  //           ))}
+  //         </CFormSelect>
+
+  //         {editando && (
+  //           <CFormSwitch
+  //             label="Activo"
+  //             name="estado"
+  //             checked={form.estado}
+  //             onChange={handleChange}
+  //             className="mt-3"
+  //           />
+  //         )}
+
+  //         {/* BOTONES */}
+  //         <CRow className="mt-4">
+  //           <CCol className="d-flex justify-content-between">
+  //             <CButton
+  //               type="button"
+  //               color="secondary"
+  //               variant="outline"
+  //               onClick={() => navigate('/usuarios')}
+  //             >
+  //               Cancelar
+  //             </CButton>
+
+  //             <CButton color="primary" type="submit">
+  //               Guardar
+  //             </CButton>
+  //           </CCol>
+  //         </CRow>
+  //       </CForm>
+  //     </CCardBody>
+  //   </CCard>
+  // )
+
   return (
-    <CCard>
-      <CCardHeader>
-        <strong>
-          {editando ? 'Editar Usuario' : 'Nuevo Usuario'}
-        </strong>
+    <CCard className="shadow-sm border-0" style={{ borderRadius: 16 }}>
+      <CCardHeader className="bg-white border-0 pb-0">
+        <h5 className="fw-semibold mb-0">{editando ? 'Editar Usuario' : 'Nuevo Usuario'}</h5>
+        <small className="text-muted">Complete la información del usuario</small>
       </CCardHeader>
 
-      <CCardBody>
+      <CCardBody className="pt-3">
         <CForm onSubmit={handleSubmit}>
-          <CFormInput
-            label="Username"
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-            disabled={editando}
-            required
-          />
+          <CRow className="g-3">
+            {/* Username */}
+            <CCol md={6}>
+              <CFormInput
+                label="Username"
+                name="username"
+                value={form.username}
+                onChange={handleChange}
+                disabled={editando}
+                required
+              />
+            </CCol>
 
-          <CFormInput
-            label="Email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            disabled={editando}
-            required
-          />
+            {/* Email */}
+            <CCol md={6}>
+              <CFormInput
+                label="Email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                disabled={editando}
+                required
+              />
+            </CCol>
 
-          <CFormInput
-            label="Nombre"
-            name="nombre"
-            value={form.nombre}
-            onChange={handleChange}
-            required
-          />
+            {/* Nombre */}
+            <CCol md={6}>
+              <CFormInput
+                label="Nombre completo"
+                name="nombre"
+                value={form.nombre}
+                onChange={handleChange}
+                required
+              />
+            </CCol>
 
-          {!editando && (
-            <CFormInput
-              label="Password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-          )}
-
-          {/* ROL */}
-          <CFormSelect
-            label="Rol"
-            name="rol_id"
-            value={form.rol_id}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccione un rol</option>
-            {roles.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.nombre}
-              </option>
-            ))}
-          </CFormSelect>
-
-          {/* SUCURSAL */}
-          <CFormSelect
-            label="Sucursal"
-            name="sucursal_id"
-            value={form.sucursal_id || ''}
-            onChange={handleChange}
-            required={!esAdmin}
-          >
-            {esAdmin && (
-              <option value="">
-                Modo Global (solo ADMIN)
-              </option>
+            {/* Password */}
+            {!editando && (
+              <CCol md={6}>
+                <CFormInput
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
+              </CCol>
             )}
 
-            {sucursales.map((s) => (
-              <option key={s.id} value={s.id}>
-                [{s.codigo_sucursal}] {s.ciudad} - {s.nombre}
-              </option>
-            ))}
-          </CFormSelect>
-
-          {editando && (
-            <CFormSwitch
-              label="Activo"
-              name="estado"
-              checked={form.estado}
-              onChange={handleChange}
-              className="mt-3"
-            />
-          )}
-
-          {/* BOTONES */}
-          <CRow className="mt-4">
-            <CCol className="d-flex justify-content-between">
-              <CButton
-                type="button"
-                color="secondary"
-                variant="outline"
-                onClick={() => navigate('/usuarios')}
+            {/* Rol */}
+            <CCol md={6}>
+              <CFormSelect
+                label="Rol"
+                name="rol_id"
+                value={form.rol_id}
+                onChange={handleChange}
+                required
               >
-                Cancelar
-              </CButton>
-
-              <CButton color="primary" type="submit">
-                Guardar
-              </CButton>
+                <option value="">Seleccione un rol</option>
+                {roles.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.nombre}
+                  </option>
+                ))}
+              </CFormSelect>
             </CCol>
+
+            {/* Sucursal */}
+            <CCol md={6}>
+              <CFormSelect
+                label="Sucursal"
+                name="sucursal_id"
+                value={form.sucursal_id ?? ''}
+                onChange={handleChange}
+                required={!esAdmin}
+              >
+                <option value="">Seleccione una sucursal</option>
+
+                {esAdmin && <option value="">Modo Global (solo ADMIN)</option>}
+
+                {sucursales.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    [{s.codigo_sucursal}] {s.ciudad} - {s.nombre}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+
+            {/* Estado */}
+            {editando && (
+              <CCol md={6} className="d-flex align-items-center mt-2">
+                <CFormSwitch
+                  label="Usuario activo"
+                  name="estado"
+                  checked={form.estado}
+                  onChange={handleChange}
+                />
+              </CCol>
+            )}
           </CRow>
+
+          {/* Botones */}
+          <div className="d-flex justify-content-end gap-2 mt-4">
+            <CButton
+              type="button"
+              color="secondary"
+              variant="outline"
+              onClick={() => navigate('/usuarios')}
+            >
+              Cancelar
+            </CButton>
+
+            <CButton color="primary" type="submit">
+              Guardar usuario
+            </CButton>
+          </div>
         </CForm>
       </CCardBody>
     </CCard>

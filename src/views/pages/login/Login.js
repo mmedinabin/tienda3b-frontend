@@ -70,7 +70,7 @@ const Login = () => {
                     />
                   </div>
 
-                  <h2 className="fw-bold mb-2">Login</h2>
+                  <h2 className="fw-bold mb-2">Iniciar session</h2>
                   <p className="text-body-secondary mb-4">
                     Ingrese a su cuenta
                   </p>

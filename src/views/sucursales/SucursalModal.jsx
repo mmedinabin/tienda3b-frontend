@@ -218,6 +218,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
             value={form.nombre}
             onChange={handleChange}
             className="mb-3"
+            placeholder="Ej: Casa Matriz, Central, etc"
             required
           />
 
@@ -227,6 +228,7 @@ const SucursalModal = ({ visible, onClose, onSave, sucursal }) => {
             value={form.direccion}
             onChange={handleChange}
             className="mb-3"
+            placeholder=""
             required
           />
 

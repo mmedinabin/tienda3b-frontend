@@ -80,12 +80,8 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
 
   return (
     <CModal visible={visible} onClose={handleClose} backdrop="static">
-      
       {/* HEADER */}
-      <CModalHeader
-        className="border-bottom"
-        style={{ backgroundColor: '#f1f3f5' }}
-      >
+      <CModalHeader className="border-bottom" style={{ backgroundColor: '#f1f3f5' }}>
         <CModalTitle className="fw-semibold">
           {form.id ? 'Editar Proveedor' : 'Nuevo Proveedor'}
         </CModalTitle>
@@ -93,7 +89,6 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
 
       <CForm onSubmit={handleSubmit}>
         <CModalBody className="pt-4">
-
           {/* NOMBRE */}
           <CFormInput
             label="Nombre *"
@@ -102,6 +97,7 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
             onChange={handleChange}
             className="mb-3"
             required
+            placeholder="Obligatorio"
             minLength={3}
           />
 
@@ -112,6 +108,7 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
             value={form.telefono}
             onChange={handleChange}
             className="mb-3"
+            placeholder="Obligatorio"
             required
             minLength={5}
           />
@@ -122,6 +119,7 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
             name="nit"
             value={form.nit}
             onChange={handleChange}
+            placeholder="Opcional"
             className="mb-3"
           />
 
@@ -131,6 +129,7 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
             name="ci"
             value={form.ci}
             onChange={handleChange}
+            placeholder="Opcional"
             className="mb-3"
           />
 
@@ -140,6 +139,7 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
             name="contacto"
             value={form.contacto}
             onChange={handleChange}
+            placeholder="Opcional"
             className="mb-3"
           />
 
@@ -150,6 +150,7 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
             type="email"
             value={form.email}
             onChange={handleChange}
+            placeholder="Opcional"
             className="mb-3"
           />
 
@@ -163,12 +164,10 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
               className="mt-2"
             />
           )}
-
         </CModalBody>
 
         {/* FOOTER */}
         <CModalFooter className="border-top pt-3 pb-3 d-flex justify-content-end">
-
           <CButton
             type="submit"
             color="primary"
@@ -182,9 +181,7 @@ const ProveedorModal = ({ visible, onClose, onSave, proveedor }) => {
           >
             Guardar
           </CButton>
-
         </CModalFooter>
-
       </CForm>
     </CModal>
   )

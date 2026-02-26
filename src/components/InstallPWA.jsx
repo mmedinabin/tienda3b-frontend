@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
 
 const InstallPWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [visible, setVisible] = useState(false)
-  const location = useLocation()
 
   useEffect(() => {
     if (localStorage.getItem('pwaPromptShown')) return
@@ -31,19 +29,30 @@ const InstallPWA = () => {
     setDeferredPrompt(null)
   }
 
-  // 👇 SOLO mostrar en login
-  if (location.pathname !== '/login') return null
+  // Solo mostrar en login (HashRouter)
+  if (!window.location.hash.includes('/login')) return null
 
   if (!visible) return null
 
+  // No mostrar si ya está instalada
   if (window.matchMedia('(display-mode: standalone)').matches) return null
 
   return (
-    <div style={{ textAlign: 'center', marginTop: 20 }}>
-      <button onClick={installApp} className="btn btn-primary">
-        Instalar aplicación
-      </button>
-    </div>
+    <button
+      onClick={installApp}
+      className="btn btn-primary"
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 9999,
+        borderRadius: '50px',
+        padding: '10px 18px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+      }}
+    >
+      📲 Instalar App
+    </button>
   )
 }
 

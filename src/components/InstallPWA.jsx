@@ -1,21 +1,18 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const InstallPWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [visible, setVisible] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
-    // Si ya se mostró antes, no hacer nada
     if (localStorage.getItem('pwaPromptShown')) return
 
     const handler = (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
-
-      // Solo mostrar en login
-      if (window.location.hash === '#/login') {
-        setVisible(true)
-      }
+      setVisible(true)
     }
 
     window.addEventListener('beforeinstallprompt', handler)
@@ -27,21 +24,19 @@ const InstallPWA = () => {
     if (!deferredPrompt) return
 
     deferredPrompt.prompt()
-    const { outcome } = await deferredPrompt.userChoice
+    await deferredPrompt.userChoice
 
-    // Guardamos que ya se mostró (instale o no)
     localStorage.setItem('pwaPromptShown', 'true')
-
-    if (outcome === 'accepted') {
-      console.log('Usuario aceptó instalar')
-    }
-
     setVisible(false)
     setDeferredPrompt(null)
   }
 
-  // Si no es visible, no renderizar nada
+  // 👇 SOLO mostrar en login
+  if (location.pathname !== '/login') return null
+
   if (!visible) return null
+
+  if (window.matchMedia('(display-mode: standalone)').matches) return null
 
   return (
     <div style={{ textAlign: 'center', marginTop: 20 }}>

@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import './scss/examples.scss'
-import InstallPWA from './components/InstallPWA'
 
 // Auth
 import ProtectedRoute from './components/ProtectedRoute'
@@ -40,7 +39,6 @@ const App = () => {
 
   return (
     <HashRouter>
-      <InstallPWA />
       <Suspense
         fallback={
           <div className="pt-3 text-center">

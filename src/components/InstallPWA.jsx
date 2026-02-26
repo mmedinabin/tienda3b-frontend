@@ -5,11 +5,14 @@ const InstallPWA = () => {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
+    // Si ya se mostró antes, no hacer nada
+    if (localStorage.getItem('pwaPromptShown')) return
+
     const handler = (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
 
-      // Solo mostrar si está en login
+      // Solo mostrar en login
       if (window.location.hash === '#/login') {
         setVisible(true)
       }
@@ -24,11 +27,20 @@ const InstallPWA = () => {
     if (!deferredPrompt) return
 
     deferredPrompt.prompt()
-    await deferredPrompt.userChoice
+    const { outcome } = await deferredPrompt.userChoice
+
+    // Guardamos que ya se mostró (instale o no)
+    localStorage.setItem('pwaPromptShown', 'true')
+
+    if (outcome === 'accepted') {
+      console.log('Usuario aceptó instalar')
+    }
 
     setVisible(false)
+    setDeferredPrompt(null)
   }
 
+  // Si no es visible, no renderizar nada
   if (!visible) return null
 
   return (

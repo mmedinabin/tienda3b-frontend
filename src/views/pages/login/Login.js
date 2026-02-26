@@ -20,6 +20,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 import { loginRequest, getPerfil } from '../../../api/auth.service'
 import { useAuthStore } from '../../../store/auth.store'
 import logo from '../../../assets/images/login3.png'
+import InstallPWA from '../../../components/InstallPWA'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -56,29 +57,20 @@ const Login = () => {
         <CRow className="justify-content-center">
           <CCol xs={12} md={10} lg={8}>
             <CCardGroup className="shadow-lg rounded-4 overflow-hidden">
-
               {/* 🔹 CARD LOGIN */}
               <CCard className="border-0 p-4 p-md-5">
                 <CCardBody>
-
                   {/* Logo SOLO mobile */}
                   <div className="text-center d-md-none mb-4">
-                    <img
-                      src={logo}
-                      alt="Logo"
-                      style={{ width: '170px' }}
-                    />
+                    <img src={logo} alt="Logo" style={{ width: '170px' }} />
                   </div>
 
                   <h2 className="fw-bold mb-2">Iniciar session</h2>
-                  <p className="text-body-secondary mb-4">
-                    Ingrese a su cuenta
-                  </p>
+                  <p className="text-body-secondary mb-4">Ingrese a su cuenta</p>
 
                   {error && <CAlert color="danger">{error}</CAlert>}
 
                   <CForm onSubmit={handleSubmit}>
-
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
@@ -117,8 +109,8 @@ const Login = () => {
                     >
                       Ingresar
                     </CButton>
-
                   </CForm>
+                  <InstallPWA />
                 </CCardBody>
               </CCard>
 
@@ -131,7 +123,6 @@ const Login = () => {
                 }}
               >
                 <CCardBody className="d-flex justify-content-center align-items-center p-5">
-
                   <img
                     src={logo}
                     alt="Logo"
@@ -141,10 +132,8 @@ const Login = () => {
                       objectFit: 'contain',
                     }}
                   />
-
                 </CCardBody>
               </CCard>
-
             </CCardGroup>
           </CCol>
         </CRow>

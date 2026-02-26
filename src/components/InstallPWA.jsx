@@ -8,7 +8,11 @@ const InstallPWA = () => {
     const handler = (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
-      setVisible(true)
+
+      // Solo mostrar si está en login
+      if (window.location.hash === '#/login') {
+        setVisible(true)
+      }
     }
 
     window.addEventListener('beforeinstallprompt', handler)
@@ -20,35 +24,19 @@ const InstallPWA = () => {
     if (!deferredPrompt) return
 
     deferredPrompt.prompt()
-    const { outcome } = await deferredPrompt.userChoice
+    await deferredPrompt.userChoice
 
-    if (outcome === 'accepted') {
-      console.log('Instalada')
-    }
-
-    setDeferredPrompt(null)
     setVisible(false)
   }
 
   if (!visible) return null
 
   return (
-    <button
-      onClick={installApp}
-      style={{
-        position: 'fixed',
-        bottom: 20,
-        right: 20,
-        zIndex: 9999,
-        padding: '10px 16px',
-        background: '#0d6efd',
-        color: '#fff',
-        border: 'none',
-        borderRadius: 8,
-      }}
-    >
-      Instalar App
-    </button>
+    <div style={{ textAlign: 'center', marginTop: 20 }}>
+      <button onClick={installApp} className="btn btn-primary">
+        Instalar aplicación
+      </button>
+    </div>
   )
 }
 

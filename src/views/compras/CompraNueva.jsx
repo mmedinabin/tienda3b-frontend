@@ -3,7 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useAuthStore } from '../../store/auth.store'
 import { useRef } from 'react'
-import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react'
+import {
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CCollapse,
+} from '@coreui/react'
 import {
   CCard,
   CCardBody,
@@ -20,8 +27,10 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
+  CContainer 
 } from '@coreui/react'
 import Select from 'react-select'
+import { format } from 'date-fns'
 import comprasService from '../../services/compras.service'
 import { proveedoresService } from '../../services/proveedores.service'
 import { productosService } from '../../services/productos.service'
@@ -348,7 +357,7 @@ const CompraNueva = () => {
         {/* TU BLOQUE ORIGINAL SIN CAMBIOS */}
         <CCard className="mb-3">
           <CCardBody>
-            <CRow>
+            <CRow className="mb-3 mb-md-0">
               <CCol md={6}>
                 <label className="form-label">Proveedor</label>
                 <div className="d-flex align-items-start gap-2">
@@ -395,41 +404,231 @@ const CompraNueva = () => {
                 />
               </CCol>
             </CRow>
+
+            <CRow>
+              <div className="d-md-none">
+                <CButton
+                  onClick={() => setMostrarFormulario(!mostrarFormulario)}
+                  className="w-100 mb-3 d-flex align-items-center justify-content-center"
+                  style={{
+                    backgroundColor: 'rgba(25, 135, 84, 0.12)', // verde suave
+                    border: '1px solid rgba(25, 135, 84, 0.35)',
+                    color: '#198754',
+                    fontWeight: 600,
+                    borderRadius: '12px',
+                    padding: '12px',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span style={{ fontSize: '1.2rem', marginRight: '8px' }}>
+                    {mostrarFormulario ? '−' : '+'}
+                  </span>
+
+                  {mostrarFormulario ? 'Ocultar formulario' : 'Añadir producto'}
+                </CButton>
+                <CCollapse visible={mostrarFormulario}>
+                  <CCard
+                    className="mb-3 shadow-sm border-0"
+                    style={{
+                      borderRadius: '18px',
+                      backgroundColor: '#f8f9ff',
+                    }}
+                  >
+                    <CCardBody className="modern-input modern-label">
+                      <CRow className="g-3">
+                        <CCol xs={12}>
+                          <label className="form-label">Producto</label>
+                          <div className="d-flex align-items-start gap-2">
+                            <div style={{ flex: 1 }}>
+                              <Select
+                                value={productoSeleccionado}
+                                options={productos}
+                                onChange={(option) => {
+                                  setProductoSeleccionado(option)
+                                  if (!option) return
+                                  setProductoTmp((prev) => ({
+                                    ...prev,
+                                    producto_id: option.value,
+                                    nombre: option.label,
+                                    precio_venta: option.precio_venta,
+                                    unidad_medida: option.unidad_medida,
+                                    tipo_presentacion: option.tipo_presentacion,
+                                  }))
+                                }}
+                                placeholder="Buscar producto..."
+                                isClearable
+                              />
+                            </div>
+
+                            <CButton
+                              size="sm"
+                              color="success"
+                              variant="outline"
+                              style={{
+                                height: 38,
+                                minWidth: isMobile ? 38 : 90,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                              onClick={() => setMostrarModalProducto(true)}
+                            >
+                              {isMobile ? '+' : '+ Nuevo'}
+                            </CButton>
+                          </div>
+                        </CCol>
+
+                        <CCol xs={12}>
+                          <CFormInput
+                            label="Cantidad"
+                            type="number"
+                            min="0"
+                            step="1"
+                            invalid={erroresNumericos.cantidad}
+                            value={productoTmp.cantidad}
+                            onChange={(e) => {
+                              let value = e.target.value
+
+                              if (Number(value) < 0) {
+                                value = 0
+                              }
+
+                              setErroresNumericos((prev) => ({
+                                ...prev,
+                                cantidad: Number(value) <= 0,
+                              }))
+
+                              setProductoTmp({ ...productoTmp, cantidad: value })
+                            }}
+                          />
+                        </CCol>
+
+                        <CCol xs={12}>
+                          <CFormInput
+                            label="Costo"
+                            type="text"
+                            value={productoTmp.costo}
+                            invalid={erroresNumericos.costo}
+                            onChange={(e) => {
+                              let value = normalizarDecimal(e.target.value)
+
+                              setProductoTmp({ ...productoTmp, costo: value })
+
+                              setErroresNumericos((prev) => ({
+                                ...prev,
+                                costo: Number(value) <= 0,
+                              }))
+                            }}
+                            onBlur={(e) => {
+                              if (e.target.value) {
+                                const formateado = Number(e.target.value).toFixed(2)
+                                setProductoTmp({ ...productoTmp, costo: formateado })
+                              }
+                            }}
+                          />
+                        </CCol>
+
+                        <CCol xs={12}>
+                          <CFormInput
+                            label="Precio vta"
+                            type="text"
+                            value={productoTmp.precio_venta}
+                            invalid={erroresNumericos.precio_venta}
+                            onChange={(e) => {
+                              let value = normalizarDecimal(e.target.value)
+
+                              setProductoTmp({ ...productoTmp, precio_venta: value })
+
+                              setErroresNumericos((prev) => ({
+                                ...prev,
+                                precio_venta: Number(value) <= 0,
+                              }))
+                            }}
+                            onBlur={(e) => {
+                              if (e.target.value) {
+                                const formateado = Number(e.target.value).toFixed(2)
+                                setProductoTmp({ ...productoTmp, precio_venta: formateado })
+                              }
+                            }}
+                          />
+                          <CCol xs={12}>
+                            <CFormSwitch
+                              label="Tiene fecha vencimiento"
+                              checked={productoTmp.usa_vencimiento}
+                              onChange={(e) =>
+                                setProductoTmp({
+                                  ...productoTmp,
+                                  usa_vencimiento: e.target.checked,
+                                })
+                              }
+                              className="mt-3"
+                            />
+
+                            {productoTmp.usa_vencimiento && (
+                              <CFormInput
+                                label="Fecha vencimiento"
+                                type="date"
+                                value={productoTmp.fecha_vencimiento}
+                                ref={fechaVencimientoRef}
+                                min={hoy}
+                                onClick={() => fechaVencimientoRef.current?.showPicker()}
+                                onChange={(e) =>
+                                  setProductoTmp({
+                                    ...productoTmp,
+                                    fecha_vencimiento: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
+                          </CCol>
+                        </CCol>
+                        <CCol xs={12}>
+                          <CButton
+                            onClick={() => {
+                              const agregado = agregarProducto()
+
+                              if (agregado && isMobile) {
+                                setMostrarFormulario(false)
+
+                                setTimeout(() => {
+                                  window.scrollTo({
+                                    top: document.body.scrollHeight,
+                                    behavior: 'smooth',
+                                  })
+                                }, 250)
+                              }
+                            }}
+                            className="w-100 fw-semibold"
+                            style={{
+                              background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                              border: 'none',
+                              borderRadius: '14px',
+                              padding: '12px',
+                              fontSize: '0.95rem',
+                              boxShadow: '0 4px 12px rgba(34, 197, 94, 0.25)',
+                              transition: 'all 0.15s ease',
+                            }}
+                            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
+                            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                          >
+                            + Añadir producto
+                          </CButton>
+                        </CCol>
+                      </CRow>
+                    </CCardBody>
+                  </CCard>
+                </CCollapse>
+              </div>
+            </CRow>
           </CCardBody>
         </CCard>
 
-        {/* ================= AGREGAR PRODUCTO ================= */}
-        <CCard className="mb-3">
-          {/* HEADER COLLAPSE SOLO EN MOVIL */}
-          {isMobile && (
-            <div
-              onClick={() => setMostrarFormulario(!mostrarFormulario)}
-              style={{
-                background: '#e8f5e9', // verde claro
-                padding: '14px 16px',
-                borderTopLeftRadius: 8,
-                borderTopRightRadius: 8,
-                cursor: 'pointer',
-                borderBottom: mostrarFormulario ? '1px solid #ddd' : 'none',
-              }}
-            >
-              <div className="d-flex justify-content-between align-items-center">
-                <strong style={{ color: '#2e7d32' }}>
-                  {mostrarFormulario ? 'Ocultar formulario' : 'Agregar producto'}
-                </strong>
-                <span style={{ fontSize: 18, color: '#2e7d32' }}>
-                  {mostrarFormulario ? '▲' : '▼'}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* FORMULARIO */}
-          {(!isMobile || mostrarFormulario) && (
+        <div className="d-none d-md-block">
+          <CCard className="mb-3">
             <CCardBody>
               <CRow className="align-items-end">
                 <CCol md={5}>
-                  <label className="form-label">Producto</label>
+                  <label className="form-label fw-semibold">Producto</label>
                   <div className="d-flex align-items-start gap-2">
                     <div style={{ flex: 1 }}>
                       <Select
@@ -569,37 +768,92 @@ const CompraNueva = () => {
                 </CCol>
               </CRow>
 
-              <CFormSwitch
-                label="Tiene fecha vencimiento"
-                checked={productoTmp.usa_vencimiento}
-                onChange={(e) =>
-                  setProductoTmp({
-                    ...productoTmp,
-                    usa_vencimiento: e.target.checked,
-                  })
-                }
-                className="mt-3"
-              />
+              <CRow className="align-items-center mt-4">
+                <CCol md="auto">
+                  <CFormSwitch
+                    label="Fecha de vencimiento"
+                    checked={productoTmp.usa_vencimiento}
+                    onChange={(e) =>
+                      setProductoTmp({
+                        ...productoTmp,
+                        usa_vencimiento: e.target.checked,
+                      })
+                    }
+                    className="fw-semibold"
+                  />
+                </CCol>
 
-              {productoTmp.usa_vencimiento && (
-                <CFormInput
-                  label="Fecha vencimiento"
-                  type="date"
-                  value={productoTmp.fecha_vencimiento}
-                  ref={fechaVencimientoRef}
-                  min={hoy}
-                  onClick={() => fechaVencimientoRef.current?.showPicker()}
-                  onChange={(e) =>
-                    setProductoTmp({
-                      ...productoTmp,
-                      fecha_vencimiento: e.target.value,
-                    })
-                  }
-                />
-              )}
+                {productoTmp.usa_vencimiento && (
+                  <CCol md={2}>
+                    <CFormInput
+                      type="date"
+                      //size="sm"
+                      value={productoTmp.fecha_vencimiento}
+                      ref={fechaVencimientoRef}
+                      min={hoy}
+                      onClick={() => fechaVencimientoRef.current?.showPicker()}
+                      onChange={(e) =>
+                        setProductoTmp({
+                          ...productoTmp,
+                          fecha_vencimiento: e.target.value,
+                        })
+                      }
+                    />
+                  </CCol>
+                )}
+              </CRow>
+            </CCardBody>
+          </CCard>
+        </div>
+
+        {/* <CCard className="mb-3">
+          {isMobile && (
+            <div
+              onClick={() => setMostrarFormulario(!mostrarFormulario)}
+              style={{
+                background: mostrarFormulario
+                  ? 'rgba(25, 135, 84, 0.15)'
+                  : 'rgba(25, 135, 84, 0.08)',
+                padding: '14px 16px',
+                border: '1px solid rgba(25, 135, 84, 0.25)',
+                borderRadius: '14px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: mostrarFormulario ? '0 4px 12px rgba(25, 135, 84, 0.15)' : 'none',
+              }}
+            >
+              <div className="d-flex justify-content-between align-items-center">
+                <div
+                  style={{
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    color: '#198754',
+                    letterSpacing: '0.3px',
+                  }}
+                >
+                  {mostrarFormulario ? 'Ocultar formulario' : 'Agregar producto'}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: '0.9rem',
+                    color: '#198754',
+                    transition: 'transform 0.2s ease',
+                    transform: mostrarFormulario ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
+                >
+                  ▼
+                </div>
+              </div>
+            </div>
+          )}
+
+          {(!isMobile || mostrarFormulario) && (
+            <CCardBody>
+              <CRow className="align-items-end"></CRow>
             </CCardBody>
           )}
-        </CCard>
+        </CCard> */}
 
         {/* ================= TABLA / CARDS ================= */}
         {detalle.length === 0 ? (
@@ -618,83 +872,168 @@ const CompraNueva = () => {
           </div>
         ) : isMobile ? (
           detalle.map((item, index) => (
-            <CCard key={index} className="mb-3 shadow-sm">
+            <CCard
+              key={index}
+              className="mb-3 border-0 shadow-sm"
+              style={{
+                borderRadius: '14px',
+                overflow: 'hidden',
+                backgroundColor: '#f2f8f4',
+                transition: 'all 0.15s ease',
+              }}
+            >
               <CCardBody>
-                <div className="d-flex justify-content-between">
-                  <strong>
-                    #{index + 1} - {item.nombre}
-                  </strong>
+                {/* 1️⃣ LABEL */}
+                <div
+                  style={{
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    lineHeight: '1.2rem',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  <span
+                    style={{
+                      color: '#6c757d',
+                      marginRight: '6px',
+                    }}
+                  >
+                    #{index + 1}
+                  </span>
+                  {item.nombre}
+                </div>
 
-                  {item.fecha_vencimiento && (
-                    <div style={{ fontSize: 13, color: '#d32f2f', marginTop: 4 }}>
-                      Vence: {item.fecha_vencimiento}
+                {/* 2️⃣ COSTO + CANTIDAD */}
+                <div className="mt-3">
+                  <div className="d-flex justify-content-between">
+                    {/* COSTO */}
+                    <div>
+                      <div className="small text-muted mb-1">Costo</div>
+                      <div
+                        style={{
+                          fontSize: '1.05rem',
+                          fontWeight: 700,
+                          color: '#111',
+                        }}
+                      >
+                        Bs {Number(item.costo).toFixed(2)}
+                      </div>
                     </div>
-                  )}
+
+                    {/* CANTIDAD */}
+                    <div style={{ textAlign: 'center' }}>
+                      <div className="small text-muted mb-1">Cant.</div>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          fontSize: '1rem',
+                        }}
+                      >
+                        {item.cantidad}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3️⃣ PRECIO VENTA + VENCIMIENTO */}
+                <div className="mt-3 small text-muted">
+                  Venta: {item.precio_venta ? `Bs ${Number(item.precio_venta).toFixed(2)}` : '-'}
+                  <br />
+                  Vence:{' '}
+                  {item.fecha_vencimiento
+                    ? format(new Date(item.fecha_vencimiento), 'dd/MM/yyyy')
+                    : '-'}
+                </div>
+
+                {/* 4️⃣ TOTAL + ELIMINAR */}
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                  <div className="fw-semibold">Subtotal: Bs {item.subtotal.toFixed(2)}</div>
 
                   <CButton
                     color="danger"
                     variant="outline"
                     size="sm"
-                    style={{
-                      width: 36,
-                      height: 36,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 8,
-                    }}
                     onClick={() => eliminarProducto(index)}
                   >
-                    ❌
+                    Quitar
                   </CButton>
-                </div>
-                <hr />
-                <div className="d-flex justify-content-between">
-                  <span>Cantidad:</span>
-                  <strong>{item.cantidad}</strong>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span>Costo:</span>
-                  <strong>{item.costo}</strong>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <span>P. Venta:</span>
-                  <strong>{item.precio_venta}</strong>
-                </div>
-                <div className="d-flex justify-content-between mt-2">
-                  <span>Subtotal:</span>
-                  <strong>{item.subtotal.toFixed(2)}</strong>
                 </div>
               </CCardBody>
             </CCard>
           ))
         ) : (
-          <CTable bordered responsive>
-            <CTableHead>
+          <CTable
+            hover
+            responsive
+            className="align-middle"
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '12px',
+              overflow: 'hidden',
+            }}
+          >
+            <CTableHead
+              style={{
+                backgroundColor: '#eef1f6',
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.6px',
+                fontWeight: 600,
+                color: '#495057',
+              }}
+            >
               <CTableRow>
-                <CTableHeaderCell>Producto</CTableHeaderCell>
-                <CTableHeaderCell>Cant</CTableHeaderCell>
-                <CTableHeaderCell>F Venc</CTableHeaderCell>
-                <CTableHeaderCell>Costo</CTableHeaderCell>
-                <CTableHeaderCell>P.Venta</CTableHeaderCell>
-                <CTableHeaderCell>Subtotal</CTableHeaderCell>
-                <CTableHeaderCell></CTableHeaderCell>
+                <CTableHeaderCell className="text-start">Producto</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Cant</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">F. Venc</CTableHeaderCell>
+                <CTableHeaderCell className="text-end">Costo</CTableHeaderCell>
+                <CTableHeaderCell className="text-end">P. Venta</CTableHeaderCell>
+                <CTableHeaderCell className="text-end">Subtotal</CTableHeaderCell>
+                <CTableHeaderCell className="text-center"></CTableHeaderCell>
               </CTableRow>
             </CTableHead>
+
             <CTableBody>
               {detalle.map((item, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell>{item.nombre}</CTableDataCell>
-                  <CTableDataCell>{item.cantidad}</CTableDataCell>
-                  <CTableDataCell>
+                <CTableRow key={index} style={{ fontSize: '0.9rem' }}>
+                  <CTableDataCell className="text-start fw-semibold">{item.nombre}</CTableDataCell>
+
+                  <CTableDataCell className="text-center">{item.cantidad}</CTableDataCell>
+
+                  <CTableDataCell className="text-center text-muted">
                     {item.fecha_vencimiento ? item.fecha_vencimiento : '-'}
                   </CTableDataCell>
-                  <CTableDataCell>{item.costo}</CTableDataCell>
-                  <CTableDataCell>{item.precio_venta}</CTableDataCell>
-                  <CTableDataCell>{item.subtotal.toFixed(2)}</CTableDataCell>
-                  <CTableDataCell>
-                    <CButton size="sm" color="danger" onClick={() => eliminarProducto(index)}>
-                      ❌
+
+                  <CTableDataCell className="text-end">
+                    Bs {Number(item.costo).toFixed(2)}
+                  </CTableDataCell>
+
+                  <CTableDataCell className="text-end">
+                    Bs {Number(item.precio_venta).toFixed(2)}
+                  </CTableDataCell>
+
+                  <CTableDataCell className="text-end fw-bold">
+                    Bs {item.subtotal.toFixed(2)}
+                  </CTableDataCell>
+
+                  <CTableDataCell className="text-center">
+                    <CButton
+                      size="sm"
+                      variant="outline"
+                      color="danger"
+                      onClick={() => eliminarProducto(index)}
+                      style={{
+                        borderRadius: '10px',
+                        width: 32,
+                        height: 32,
+                        padding: 0,
+                      }}
+                    >
+                      ✕
                     </CButton>
                   </CTableDataCell>
                 </CTableRow>
@@ -913,125 +1252,145 @@ const CompraNueva = () => {
       </CModal>
 
       {/* ================= MODAL PRODUCTO RÁPIDO ================= */}
+      {/* ================= MODAL PRODUCTO RÁPIDO ================= */}
       <CModal
         visible={mostrarModalProducto}
         onClose={() => setMostrarModalProducto(false)}
+        alignment="center"
         size="lg"
+        backdrop="static"
       >
-        <CModalHeader>
-          <CModalTitle>Nuevo producto</CModalTitle>
+        <CModalHeader className="bg-light border-bottom">
+          <CModalTitle className="fw-semibold">Nuevo Producto</CModalTitle>
         </CModalHeader>
 
-        <CModalBody>
-          <CRow>
-            <CCol md={6}>
-              <CFormSelect
-                label="Categoría *"
-                value={nuevoProducto.categoria_id}
-                onChange={(e) =>
-                  setNuevoProducto({ ...nuevoProducto, categoria_id: e.target.value })
-                }
-              >
-                <option value="">Seleccione</option>
-                {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre}
-                  </option>
-                ))}
-              </CFormSelect>
-            </CCol>
+        <CModalBody className="px-4 py-4">
+          <CContainer fluid>
+            {/* ================= DATOS GENERALES ================= */}
+            <div className="mb-4">
+              <h6 className="text-muted fw-bold mb-3">Información General</h6>
 
-            <CCol md={6}>
-              <CFormSelect
-                label="Marca"
-                value={nuevoProducto.marca_id}
-                onChange={(e) => setNuevoProducto({ ...nuevoProducto, marca_id: e.target.value })}
-              >
-                <option value="">Seleccione</option>
-                {marcas.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nombre}
-                  </option>
-                ))}
-              </CFormSelect>
-            </CCol>
-          </CRow>
+              <CRow className="g-3">
+                <CCol xs={12} md={6}>
+                  <CFormSelect
+                    label="Categoría *"
+                    value={nuevoProducto.categoria_id}
+                    onChange={(e) =>
+                      setNuevoProducto({ ...nuevoProducto, categoria_id: e.target.value })
+                    }
+                  >
+                    <option value="">Seleccione</option>
+                    {categorias.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nombre}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                </CCol>
 
-          <CFormInput
-            label="Nombre *"
-            className="mt-3"
-            value={nuevoProducto.nombre}
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })}
-          />
+                <CCol xs={12} md={6}>
+                  <CFormSelect
+                    label="Marca"
+                    value={nuevoProducto.marca_id}
+                    onChange={(e) =>
+                      setNuevoProducto({ ...nuevoProducto, marca_id: e.target.value })
+                    }
+                  >
+                    <option value="">Seleccione</option>
+                    {marcas.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.nombre}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                </CCol>
 
-          <CFormInput
-            label="Descripción"
-            className="mt-3"
-            value={nuevoProducto.descripcion}
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })}
-          />
+                <CCol xs={12}>
+                  <CFormInput
+                    label="Nombre *"
+                    value={nuevoProducto.nombre}
+                    onChange={(e) => setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })}
+                  />
+                </CCol>
 
-          <CRow className="mt-3">
-            <CCol md={6}>
-              <CFormSelect
-                label="Presentación"
-                value={nuevoProducto.tipo_presentacion}
-                onChange={(e) =>
-                  setNuevoProducto({
-                    ...nuevoProducto,
-                    tipo_presentacion: e.target.value,
-                  })
-                }
-              >
-                <option value="UNIDAD">UNIDAD</option>
-                <option value="CAJA">CAJA</option>
-                <option value="GRANEL">GRANEL</option>
-              </CFormSelect>
-            </CCol>
+                <CCol xs={12}>
+                  <CFormInput
+                    label="Descripción"
+                    value={nuevoProducto.descripcion}
+                    onChange={(e) =>
+                      setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })
+                    }
+                  />
+                </CCol>
+              </CRow>
+            </div>
 
-            <CCol md={6}>
-              <CFormSelect
-                label="Unidad medida"
-                value={nuevoProducto.unidad_medida}
-                onChange={(e) =>
-                  setNuevoProducto({
-                    ...nuevoProducto,
-                    unidad_medida: e.target.value,
-                  })
-                }
-              >
-                {/* <option value="">Seleccione</option> */}
-                <option value="PZA">PZA - Pieza</option>
-                <option value="KG">KG - Kilogramo</option>
-                <option value="LT">LT - Litro</option>
-                <option value="GR">GR - Gramo</option>
-              </CFormSelect>
-            </CCol>
-          </CRow>
+            {/* ================= PRESENTACIÓN ================= */}
+            <div className="mb-3">
+              <h6 className="text-muted fw-bold mb-3">Presentación y Precio</h6>
 
-          <CFormInput
-            label="Precio venta *"
-            type="number"
-            className="mt-3"
-            value={nuevoProducto.precio_venta}
-            onChange={(e) =>
-              setNuevoProducto({
-                ...nuevoProducto,
-                precio_venta: e.target.value,
-              })
-            }
-          />
+              <CRow className="g-3">
+                <CCol xs={12} md={6}>
+                  <CFormSelect
+                    label="Presentación"
+                    value={nuevoProducto.tipo_presentacion}
+                    onChange={(e) =>
+                      setNuevoProducto({
+                        ...nuevoProducto,
+                        tipo_presentacion: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="UNIDAD">UNIDAD</option>
+                    <option value="CAJA">CAJA</option>
+                    <option value="GRANEL">GRANEL</option>
+                  </CFormSelect>
+                </CCol>
+
+                <CCol xs={12} md={6}>
+                  <CFormSelect
+                    label="Unidad medida"
+                    value={nuevoProducto.unidad_medida}
+                    onChange={(e) =>
+                      setNuevoProducto({
+                        ...nuevoProducto,
+                        unidad_medida: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="PZA">PZA - Pieza</option>
+                    <option value="KG">KG - Kilogramo</option>
+                    <option value="LT">LT - Litro</option>
+                    <option value="GR">GR - Gramo</option>
+                  </CFormSelect>
+                </CCol>
+
+                <CCol xs={12} md={6}>
+                  <CFormInput
+                    label="Precio venta *"
+                    type="number"
+                    value={nuevoProducto.precio_venta}
+                    onChange={(e) =>
+                      setNuevoProducto({
+                        ...nuevoProducto,
+                        precio_venta: e.target.value,
+                      })
+                    }
+                  />
+                </CCol>
+              </CRow>
+            </div>
+          </CContainer>
         </CModalBody>
 
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setMostrarModalProducto(false)}>
-            Cancelar
-          </CButton>
+        {/* ================= FOOTER PROFESIONAL ================= */}
+        <CModalFooter className="d-flex flex-column flex-md-row justify-content-end gap-2 px-4 py-3 border-top bg-light">
 
           <CButton
-            color="success"
+            color="primary"
+            className="w-100 w-md-auto px-4"
             disabled={guardandoProducto}
-            onClick={async () => {
+             onClick={async () => {
               if (
                 !nuevoProducto.categoria_id ||
                 !nuevoProducto.nombre.trim() ||
@@ -1097,9 +1456,10 @@ const CompraNueva = () => {
               }
             }}
           >
-            {guardandoProducto ? 'Guardando...' : 'Guardar'}
+            {guardandoProducto ? 'Guardando...' : 'Guardar Producto'}
           </CButton>
         </CModalFooter>
+
       </CModal>
     </>
   )

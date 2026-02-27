@@ -94,3 +94,60 @@ body {
 .table-no-select th {
   caret-color: transparent;
 }
+
+/* Hace que el wrapper del DatePicker ocupe todo el ancho */
+// .react-datepicker-wrapper {
+//   flex: 1 1 auto;
+// }
+
+// .react-datepicker__input-container {
+//   width: 100%;
+// }
+
+// .react-datepicker__input-container input {
+//   width: 100%;
+//   border: 0;
+// }S
+
+// .react-datepicker__input-container {
+//   width: 100%;
+// }
+
+// .react-datepicker__input-container input {
+//   width: 100%;
+// }
+
+
+.react-datepicker-wrapper {
+  flex: 1 1 auto;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+}
+
+
+.modern-input .form-control,
+.modern-input .css-13cymwt-control {
+  background-color: #ffffff;
+  border: 1px solid #dbe3f0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+}
+
+.modern-input .form-control:focus {
+  border-color: #5856d6;
+  box-shadow: 0 0 0 3px rgba(88, 86, 214, 0.15);
+}
+
+.modern-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: #3b3f5c;
+}

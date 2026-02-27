@@ -396,20 +396,6 @@ const POSPage = () => {
                   }}
                   isSearchable
                 />
-                {/* <label className="form-label fw-semibold">Buscar producto</label>
-
-                <Select
-                  options={productos.map((p) => ({
-                    value: p.id,
-                    label: `${p.marca ? p.marca + ' - ' : ''}${p.nombre}${p.descripcion ? ' - ' + p.descripcion : ''} | Bs ${p.precio_venta}`,
-                  }))}
-                  placeholder="Escribe para buscar..."
-                  onChange={(selected) => {
-                    const producto = productos.find((p) => p.id === selected.value)
-                    if (producto) agregarProducto(producto)
-                  }}
-                  isSearchable
-                /> */}
               </div>
             ) : (
               <div className="position-relative mb-3">

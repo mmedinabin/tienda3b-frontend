@@ -130,7 +130,8 @@ const ProductoForm = () => {
     if (!form.nombre.trim()) return 'Nombre es obligatorio'
 
     const precio = Number(form.precio_venta)
-    if (!precio || precio <= 0) return 'Precio de venta debe ser mayor a 0'
+
+    if (isNaN(precio) || precio < 0) return 'Precio de venta inválido'
 
     if (esEdicion) {
       if (Number(form.stock_minimo) < 0) return 'Stock mínimo no puede ser negativo'
@@ -347,7 +348,7 @@ const ProductoForm = () => {
 
                 <CFormInput
                   label="Variante (opcional)"
-                  placeholder='ej. Colores (Azul), Aromas (Floral), etc.'
+                  placeholder="ej. Colores (Azul), Aromas (Floral), etc."
                   value={form.descripcion}
                   onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
                   className="mb-3"

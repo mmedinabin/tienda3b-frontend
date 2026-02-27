@@ -91,6 +91,24 @@ const _nav = [
     icon: <CIcon icon={cilLayers} className="nav-icon" />,
     permiso: 'stock_ver',
   },
+
+    {
+    component: CNavItem,
+    name: 'Movimientos',
+    to: '/movimientos',
+    icon: <CIcon icon={cilTransfer} className="nav-icon" />,
+    permiso: 'movimientos',
+  },
+  //    {
+  //   component: CNavItem,
+  //   name: 'Ajutes',
+  //   to: '/transferencias',
+  //   icon: <CIcon icon={cilTransfer} className="nav-icon" />,
+  //   permiso: 'transferencias',
+  // },
+
+
+
   {
     component: CNavTitle,
     name: 'Reportes',

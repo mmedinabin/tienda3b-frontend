@@ -65,6 +65,8 @@ const Compras = React.lazy(() => import('./views/compras/Compras'))
 const CompraNueva = React.lazy(() => import('./views/compras/CompraNueva'))
 const POSPage = React.lazy(() => import('./views/ventas/POSPage'))
 const Ventas = React.lazy(() => import('./views/ventas/Ventas'))
+const Movimientos = React.lazy(() => import('./views/movimientos/Movimientos'))
+const MovimientosForm = React.lazy(() => import('./views/movimientos/MovimientosForm'))
 const Stock = React.lazy(() => import('./views/stock/StockInventario'))
 const RptVentas = React.lazy(() => import('./views/reportes/RptVentas'))
 const RptCompras = React.lazy(() => import('./views/reportes/RptCompras'))
@@ -152,7 +154,7 @@ const routes = [
     name: 'Clientes',
     element: Clientes,
     modulo: 'clientes',
-    accion: 'crear'
+    accion: 'crear',
   },
   {
     path: '/proveedores',
@@ -166,46 +168,55 @@ const routes = [
     name: 'Productos',
     element: Productos,
     modulo: 'productos',
-    accion: 'ver'
+    accion: 'ver',
   },
-  { path: '/productos/nuevo', element: ProductoForm, modulo: 'productos',
-    accion: 'crear'},
-  { path: '/productos/editar/:id', element: ProductoForm,  modulo: 'productos',
-    accion: 'editar' },
+  { path: '/productos/nuevo', element: ProductoForm, modulo: 'productos', accion: 'crear' },
+  { path: '/productos/editar/:id', element: ProductoForm, modulo: 'productos', accion: 'editar' },
   {
     path: '/empleados',
     name: 'Empleados',
     element: Empleados,
     modulo: 'empleados',
-    accion: 'ver'
+    accion: 'ver',
   },
-  { path: '/empleados/nuevo', element: EmpleadoForm, modulo: 'empleados',
-    accion: 'crear' },
-  { path: '/empleados/editar/:id', element: EmpleadoForm, modulo: 'empleados',
-    accion: 'editar' },
+  { path: '/empleados/nuevo', element: EmpleadoForm, modulo: 'empleados', accion: 'crear' },
+  { path: '/empleados/editar/:id', element: EmpleadoForm, modulo: 'empleados', accion: 'editar' },
 
   {
     path: '/compras',
     name: 'Compras',
     element: Compras,
     modulo: 'compras',
-    accion: 'ver'
+    accion: 'ver',
   },
-  { path: '/compras/nuevo', element: CompraNueva, modulo: 'compras',
-    accion: 'editar' },
+  { path: '/compras/nuevo', element: CompraNueva, modulo: 'compras', accion: 'editar' },
   {
     path: '/ventas',
     name: 'Ventas',
     element: POSPage,
     modulo: 'ventas',
-    accion: 'crear'
+    accion: 'crear',
   },
   {
     path: '/historialventas',
     name: 'Ventas',
     element: Ventas,
     modulo: 'ventas',
-    accion: 'ver'
+    accion: 'ver',
+  },
+  {
+    path: '/movimientos',
+    name: 'Movimientos',
+    element: Movimientos,
+    modulo: 'movimientos',
+    accion: 'ver',
+  },
+  {
+    path: '/movimientos/nuevo',
+    name: 'Movimientos',
+    element: MovimientosForm,
+    modulo: 'movimientos',
+    accion: 'crear',
   },
   {
     path: '/reportes/ventas',

@@ -70,6 +70,7 @@ const MovimientosForm = React.lazy(() => import('./views/movimientos/Movimientos
 const Stock = React.lazy(() => import('./views/stock/StockInventario'))
 const RptVentas = React.lazy(() => import('./views/reportes/RptVentas'))
 const RptCompras = React.lazy(() => import('./views/reportes/RptCompras'))
+const NuevaDistribucion = React.lazy(() => import('./views/distribucion/NuevaDistribucion'))
 
 const NoAutorizado = React.lazy(() => import('./views/pages/NoAutorizado'))
 
@@ -203,6 +204,13 @@ const routes = [
     element: Ventas,
     modulo: 'ventas',
     accion: 'ver',
+  },
+    {
+    path: '/distribucion/nuevo',
+    name: 'Distribucion',
+    element: NuevaDistribucion,
+    modulo: 'ventas',
+    accion: 'crear',
   },
   {
     path: '/movimientos',

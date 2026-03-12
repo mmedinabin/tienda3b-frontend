@@ -44,29 +44,12 @@ const Compras = () => {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
-  // useEffect(() => {
-  //   const cargarCompras = async () => {
-  //     try {
-  //       setCargando(true)
-
-  //       const { data } = await comprasService.listar()
-
-  //       setCompras(data.data ?? data)
-  //     } catch (error) {
-  //       console.error('Error cargando compras', error)
-  //       setCompras([])
-  //     } finally {
-  //       setCargando(false)
-  //     }
-  //   }
-
-  //   cargarCompras()
-  // }, [sucursalActiva])
 
   const cargarCompras = async () => {
     try {
       setCargando(true)
       const { data } = await comprasService.listar()
+      console.log(data);
       setCompras(data.data ?? data)
     } catch (error) {
       console.error('Error cargando compras', error)

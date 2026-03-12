@@ -107,6 +107,18 @@ const _nav = [
   //   permiso: 'transferencias',
   // },
 
+{
+    component: CNavTitle,
+    name: 'Distribucion',
+  },
+
+  {
+    component: CNavItem,
+    name: 'Generar',
+    to: '/distribucion/nuevo',
+    icon: <CIcon icon={cilBasket} className="nav-icon" />,
+    permiso: 'ventas',
+  },
 
 
   {

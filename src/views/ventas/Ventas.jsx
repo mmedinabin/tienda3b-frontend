@@ -101,34 +101,6 @@ const Ventas = () => {
     }
   }
 
-  // const handleAnular = async (venta) => {
-  //   const { value: motivo } = await Swal.fire({
-  //     title: 'Anular venta',
-  //     input: 'text',
-  //     inputLabel: 'Motivo de anulación',
-  //     inputPlaceholder: 'Ej: Producto defectuoso',
-  //     inputValidator: (value) => {
-  //       if (!value) return 'Debe ingresar un motivo'
-  //     },
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#d33',
-  //     confirmButtonText: 'Anular',
-  //   })
-
-  //   if (!motivo) return
-
-  //   try {
-  //     await ventasService.anular(venta.id, motivo)
-
-  //     Swal.fire('Correcto', 'Venta anulada correctamente', 'success')
-
-  //     await cargarVentas()
-  //     setVentaSeleccionada(null)
-  //   } catch (error) {
-  //     console.log(error.response?.data)
-  //     Swal.fire('Error', error.response?.data?.message || 'Error al anular venta', 'error')
-  //   }
-  // }
   const handleAnular = async (venta) => {
     const { value: motivo } = await Swal.fire({
       title: 'Anular venta',

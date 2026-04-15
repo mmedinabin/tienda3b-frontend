@@ -31,12 +31,52 @@ const selectStyles = {
     minHeight: 38,
     borderColor: '#d8dbe0',
     boxShadow: 'none',
+    backgroundColor: '#ffffff', // 👈 FIX
+    color: '#000000',
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: '#ffffff', // 👈 FIX
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: '#ffffff',
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? '#f2f2f2' : '#ffffff',
+    color: '#000000', // 👈 FIX CLAVE
+    cursor: 'pointer',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: '#000000',
+  }),
+  input: (base) => ({
+    ...base,
+    color: '#000000',
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: '#666666',
   }),
   menuPortal: (base) => ({
     ...base,
     zIndex: 9999,
   }),
 }
+// const selectStyles = {
+//   control: (base) => ({
+//     ...base,
+//     minHeight: 38,
+//     borderColor: '#d8dbe0',
+//     boxShadow: 'none',
+//   }),
+//   menuPortal: (base) => ({
+//     ...base,
+//     zIndex: 9999,
+//   }),
+// }
 
 const initialForm = {
   categoria_id: 0,
@@ -245,15 +285,6 @@ const ProductoForm = () => {
                       objectFit: 'contain',
                     }}
                   />
-                  {/* {imagenPreview ? (
-                    <img
-                      src={imagenPreview}
-                      alt="Preview"
-                      style={{ maxHeight: '100%', maxWidth: '100%' }}
-                    />
-                  ) : (
-                    <span>Sin imagen</span>
-                  )} */}
                 </div>
 
                 <CFormInput

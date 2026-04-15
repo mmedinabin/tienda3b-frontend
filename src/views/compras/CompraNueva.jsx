@@ -27,7 +27,7 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CContainer 
+  CContainer,
 } from '@coreui/react'
 import Select from 'react-select'
 import { format } from 'date-fns'
@@ -372,6 +372,48 @@ const CompraNueva = () => {
                       }}
                       placeholder="Buscar proveedor..."
                       isClearable
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          minHeight: 38,
+                          backgroundColor: '#ffffff',
+                          color: '#000000',
+                          borderColor: '#d8dbe0',
+                          boxShadow: 'none',
+                        }),
+                        singleValue: (base) => ({
+                          ...base,
+                          color: '#000000',
+                        }),
+                        input: (base) => ({
+                          ...base,
+                          color: '#000000',
+                        }),
+                        placeholder: (base) => ({
+                          ...base,
+                          color: '#666666',
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          backgroundColor: '#ffffff',
+                        }),
+                        menuList: (base) => ({
+                          ...base,
+                          backgroundColor: '#ffffff',
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          backgroundColor: state.isFocused ? '#f2f2f2' : '#ffffff',
+                          color: '#000000',
+                          cursor: 'pointer',
+                        }),
+                        menuPortal: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                        }),
+                      }}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
                     />
                   </div>
 
@@ -486,6 +528,11 @@ const CompraNueva = () => {
                             step="1"
                             invalid={erroresNumericos.cantidad}
                             value={productoTmp.cantidad}
+                            style={{
+                              backgroundColor: '#ffffff',
+                              color: '#000000',
+                              caretColor: '#000000',
+                            }}
                             onChange={(e) => {
                               let value = e.target.value
 
@@ -509,6 +556,11 @@ const CompraNueva = () => {
                             type="text"
                             value={productoTmp.costo}
                             invalid={erroresNumericos.costo}
+                            style={{
+                              backgroundColor: '#ffffff',
+                              color: '#000000',
+                              caretColor: '#000000',
+                            }}
                             onChange={(e) => {
                               let value = normalizarDecimal(e.target.value)
 
@@ -534,6 +586,11 @@ const CompraNueva = () => {
                             type="text"
                             value={productoTmp.precio_venta}
                             invalid={erroresNumericos.precio_venta}
+                            style={{
+                              backgroundColor: '#ffffff',
+                              color: '#000000',
+                              caretColor: '#000000',
+                            }}
                             onChange={(e) => {
                               let value = normalizarDecimal(e.target.value)
 
@@ -677,6 +734,93 @@ const CompraNueva = () => {
                     step="1"
                     invalid={erroresNumericos.cantidad}
                     value={productoTmp.cantidad}
+                    style={{
+                      backgroundColor: '#ffffff',
+                      color: '#000000',
+                    }}
+                    onChange={(e) => {
+                      let value = e.target.value
+
+                      if (Number(value) < 0) {
+                        value = 0
+                      }
+
+                      setErroresNumericos((prev) => ({
+                        ...prev,
+                        cantidad: Number(value) <= 0,
+                      }))
+
+                      setProductoTmp({ ...productoTmp, cantidad: value })
+                    }}
+                  />
+                </CCol>
+
+                <CCol md={2}>
+                  <CFormInput
+                    label="Costo"
+                    type="text"
+                    value={productoTmp.costo}
+                    invalid={erroresNumericos.costo}
+                    style={{
+                      backgroundColor: '#ffffff',
+                      color: '#000000',
+                    }}
+                    onChange={(e) => {
+                      let value = normalizarDecimal(e.target.value)
+
+                      setProductoTmp({ ...productoTmp, costo: value })
+
+                      setErroresNumericos((prev) => ({
+                        ...prev,
+                        costo: Number(value) <= 0,
+                      }))
+                    }}
+                    onBlur={(e) => {
+                      if (e.target.value) {
+                        const formateado = Number(e.target.value).toFixed(2)
+                        setProductoTmp({ ...productoTmp, costo: formateado })
+                      }
+                    }}
+                  />
+                </CCol>
+
+                <CCol md={2}>
+                  <CFormInput
+                    label="Precio vta"
+                    type="text"
+                    value={productoTmp.precio_venta}
+                    invalid={erroresNumericos.precio_venta}
+                    style={{
+                      backgroundColor: '#ffffff',
+                      color: '#000000',
+                    }}
+                    onChange={(e) => {
+                      let value = normalizarDecimal(e.target.value)
+
+                      setProductoTmp({ ...productoTmp, precio_venta: value })
+
+                      setErroresNumericos((prev) => ({
+                        ...prev,
+                        precio_venta: Number(value) <= 0,
+                      }))
+                    }}
+                    onBlur={(e) => {
+                      if (e.target.value) {
+                        const formateado = Number(e.target.value).toFixed(2)
+                        setProductoTmp({ ...productoTmp, precio_venta: formateado })
+                      }
+                    }}
+                  />
+                </CCol>
+
+                {/* <CCol md={1}>
+                  <CFormInput
+                    label="Cantidad"
+                    type="number"
+                    min="0"
+                    step="1"
+                    invalid={erroresNumericos.cantidad}
+                    value={productoTmp.cantidad}
                     onChange={(e) => {
                       let value = e.target.value
 
@@ -742,7 +886,7 @@ const CompraNueva = () => {
                       }
                     }}
                   />
-                </CCol>
+                </CCol> */}
 
                 <CCol md={2}>
                   <CButton
@@ -806,55 +950,6 @@ const CompraNueva = () => {
           </CCard>
         </div>
 
-        {/* <CCard className="mb-3">
-          {isMobile && (
-            <div
-              onClick={() => setMostrarFormulario(!mostrarFormulario)}
-              style={{
-                background: mostrarFormulario
-                  ? 'rgba(25, 135, 84, 0.15)'
-                  : 'rgba(25, 135, 84, 0.08)',
-                padding: '14px 16px',
-                border: '1px solid rgba(25, 135, 84, 0.25)',
-                borderRadius: '14px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: mostrarFormulario ? '0 4px 12px rgba(25, 135, 84, 0.15)' : 'none',
-              }}
-            >
-              <div className="d-flex justify-content-between align-items-center">
-                <div
-                  style={{
-                    fontWeight: 600,
-                    fontSize: '0.95rem',
-                    color: '#198754',
-                    letterSpacing: '0.3px',
-                  }}
-                >
-                  {mostrarFormulario ? 'Ocultar formulario' : 'Agregar producto'}
-                </div>
-
-                <div
-                  style={{
-                    fontSize: '0.9rem',
-                    color: '#198754',
-                    transition: 'transform 0.2s ease',
-                    transform: mostrarFormulario ? 'rotate(180deg)' : 'rotate(0deg)',
-                  }}
-                >
-                  ▼
-                </div>
-              </div>
-            </div>
-          )}
-
-          {(!isMobile || mostrarFormulario) && (
-            <CCardBody>
-              <CRow className="align-items-end"></CRow>
-            </CCardBody>
-          )}
-        </CCard> */}
-
         {/* ================= TABLA / CARDS ================= */}
         {detalle.length === 0 ? (
           <div
@@ -878,11 +973,13 @@ const CompraNueva = () => {
               style={{
                 borderRadius: '14px',
                 overflow: 'hidden',
-                backgroundColor: '#f2f8f4',
+                backgroundColor: '#ffffff', // 👈 FIX
                 transition: 'all 0.15s ease',
               }}
             >
-              <CCardBody>
+              <CCardBody style={{ color: '#000' }}>
+                {' '}
+                {/* 👈 FIX GLOBAL */}
                 {/* 1️⃣ LABEL */}
                 <div
                   style={{
@@ -906,18 +1003,18 @@ const CompraNueva = () => {
                   </span>
                   {item.nombre}
                 </div>
-
                 {/* 2️⃣ COSTO + CANTIDAD */}
                 <div className="mt-3">
                   <div className="d-flex justify-content-between">
                     {/* COSTO */}
                     <div>
-                      <div className="small text-muted mb-1">Costo</div>
+                      <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>Costo</div>
+
                       <div
                         style={{
                           fontSize: '1.05rem',
                           fontWeight: 700,
-                          color: '#111',
+                          color: '#000', // 👈 FIX
                         }}
                       >
                         Bs {Number(item.costo).toFixed(2)}
@@ -926,11 +1023,13 @@ const CompraNueva = () => {
 
                     {/* CANTIDAD */}
                     <div style={{ textAlign: 'center' }}>
-                      <div className="small text-muted mb-1">Cant.</div>
+                      <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>Cant.</div>
+
                       <div
                         style={{
                           fontWeight: 600,
                           fontSize: '1rem',
+                          color: '#000', // 👈 FIX
                         }}
                       >
                         {item.cantidad}
@@ -938,9 +1037,8 @@ const CompraNueva = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* 3️⃣ PRECIO VENTA + VENCIMIENTO */}
-                <div className="mt-3 small text-muted">
+                <div style={{ marginTop: '12px', fontSize: '0.8rem', color: '#6c757d' }}>
                   Venta: {item.precio_venta ? `Bs ${Number(item.precio_venta).toFixed(2)}` : '-'}
                   <br />
                   Vence:{' '}
@@ -948,10 +1046,11 @@ const CompraNueva = () => {
                     ? format(new Date(item.fecha_vencimiento), 'dd/MM/yyyy')
                     : '-'}
                 </div>
-
                 {/* 4️⃣ TOTAL + ELIMINAR */}
                 <div className="d-flex justify-content-between align-items-center mt-3">
-                  <div className="fw-semibold">Subtotal: Bs {item.subtotal.toFixed(2)}</div>
+                  <div className="fw-semibold" style={{ color: '#000' }}>
+                    Subtotal: Bs {item.subtotal.toFixed(2)}
+                  </div>
 
                   <CButton
                     color="danger"
@@ -964,6 +1063,98 @@ const CompraNueva = () => {
                 </div>
               </CCardBody>
             </CCard>
+            // <CCard
+            //   key={index}
+            //   className="mb-3 border-0 shadow-sm"
+            //   style={{
+            //     borderRadius: '14px',
+            //     overflow: 'hidden',
+            //     backgroundColor: '#f2f8f4',
+            //     transition: 'all 0.15s ease',
+            //   }}
+            // >
+            //   <CCardBody>
+            //     {/* 1️⃣ LABEL */}
+            //     <div
+            //       style={{
+            //         fontWeight: 600,
+            //         fontSize: '0.95rem',
+            //         lineHeight: '1.2rem',
+            //         display: '-webkit-box',
+            //         WebkitLineClamp: 2,
+            //         WebkitBoxOrient: 'vertical',
+            //         overflow: 'hidden',
+            //         wordBreak: 'break-word',
+            //       }}
+            //     >
+            //       <span
+            //         style={{
+            //           color: '#6c757d',
+            //           marginRight: '6px',
+            //         }}
+            //       >
+            //         #{index + 1}
+            //       </span>
+            //       {item.nombre}
+            //     </div>
+
+            //     {/* 2️⃣ COSTO + CANTIDAD */}
+            //     <div className="mt-3">
+            //       <div className="d-flex justify-content-between">
+            //         {/* COSTO */}
+            //         <div>
+            //           <div className="small text-muted mb-1">Costo</div>
+            //           <div
+            //             style={{
+            //               fontSize: '1.05rem',
+            //               fontWeight: 700,
+            //               color: '#111',
+            //             }}
+            //           >
+            //             Bs {Number(item.costo).toFixed(2)}
+            //           </div>
+            //         </div>
+
+            //         {/* CANTIDAD */}
+            //         <div style={{ textAlign: 'center' }}>
+            //           <div className="small text-muted mb-1">Cant.</div>
+            //           <div
+            //             style={{
+            //               fontWeight: 600,
+            //               fontSize: '1rem',
+            //             }}
+            //           >
+            //             {item.cantidad}
+            //           </div>
+            //         </div>
+            //       </div>
+            //     </div>
+
+            //     {/* 3️⃣ PRECIO VENTA + VENCIMIENTO */}
+            //     <div className="mt-3 small text-muted">
+            //       Venta: {item.precio_venta ? `Bs ${Number(item.precio_venta).toFixed(2)}` : '-'}
+            //       <br />
+            //       Vence:{' '}
+            //       {item.fecha_vencimiento
+            //         ? format(new Date(item.fecha_vencimiento), 'dd/MM/yyyy')
+            //         : '-'}
+            //     </div>
+
+            //     {/* 4️⃣ TOTAL + ELIMINAR */}
+            //     <div className="d-flex justify-content-between align-items-center mt-3">
+            //       <div className="fw-semibold">Subtotal: Bs {item.subtotal.toFixed(2)}</div>
+
+            //       <CButton
+            //         color="danger"
+            //         variant="outline"
+            //         size="sm"
+            //         onClick={() => eliminarProducto(index)}
+            //       >
+            //         Quitar
+            //       </CButton>
+            //     </div>
+            //   </CCardBody>
+            // </CCard>
           ))
         ) : (
           <CTable
@@ -1385,12 +1576,11 @@ const CompraNueva = () => {
 
         {/* ================= FOOTER PROFESIONAL ================= */}
         <CModalFooter className="d-flex flex-column flex-md-row justify-content-end gap-2 px-4 py-3 border-top bg-light">
-
           <CButton
             color="primary"
             className="w-100 w-md-auto px-4"
             disabled={guardandoProducto}
-             onClick={async () => {
+            onClick={async () => {
               if (
                 !nuevoProducto.categoria_id ||
                 !nuevoProducto.nombre.trim() ||
@@ -1459,7 +1649,6 @@ const CompraNueva = () => {
             {guardandoProducto ? 'Guardando...' : 'Guardar Producto'}
           </CButton>
         </CModalFooter>
-
       </CModal>
     </>
   )

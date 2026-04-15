@@ -107,6 +107,122 @@ const Movimientos = () => {
     }
   }
 
+  // const MovimientoCard = ({ row, index }) => {
+  //   let estado = row.estado
+  //   let colorEstado = 'secondary'
+
+  //   switch (row.estado) {
+  //     case 'ANULADO':
+  //       estado = 'Anulado'
+  //       colorEstado = 'danger'
+  //       break
+  //     case 'ACTIVO':
+  //       estado = 'Activo'
+  //       colorEstado = 'success'
+  //       break
+  //     default:
+  //       estado = row.estado
+  //   }
+
+  //   // Color según tipo movimiento
+  //   let colorTipo = 'secondary'
+  //   switch (row.tipo_movimiento) {
+  //     case 'ENTRADA_INICIAL':
+  //       colorTipo = 'success'
+  //       break
+  //     case 'TRANSFERENCIA':
+  //       colorTipo = 'info'
+  //       break
+  //     case 'MERMA':
+  //       colorTipo = 'danger'
+  //       break
+  //     case 'AJUSTE':
+  //       colorTipo = 'warning'
+  //       break
+  //     default:
+  //       colorTipo = 'secondary'
+  //   }
+
+  //   return (
+  //     <CCard
+  //       className="mb-3"
+  //       style={{
+  //         backgroundColor: '#f8f9fb',
+  //         borderRadius: '20px',
+  //         border: '1px solid #dee0e0',
+  //         boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
+  //       }}
+  //     >
+  //       <CCardBody className="p-3">
+  //         {/* Header */}
+  //         <div className="d-flex justify-content-between align-items-center mb-2">
+  //           <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
+  //             #{index + 1} · {row.codigo}
+  //           </span>
+  //           <CBadge color={colorEstado}>{estado}</CBadge>
+  //         </div>
+
+  //         {/* Fecha + Tipo */}
+  //         <div className="d-flex justify-content-between align-items-center mb-3">
+  //           <span className="text-muted" style={{ fontSize: '0.8rem' }}>
+  //             {new Date(row.created_at).toLocaleDateString('es-BO')}
+  //           </span>
+
+  //           <CBadge color={colorTipo}>{row.tipo_movimiento}</CBadge>
+  //         </div>
+
+  //         {row.total_items === 1 ? (
+  //           <div className="d-flex justify-content-between mb-2">
+  //             <span className="text-muted">Producto</span>
+  //             <span style={{ textAlign: 'right' }}>
+  //               {row.producto_unico}
+  //               <br />
+  //               <small className="text-muted">Cantidad: {row.cantidad_unica}</small>
+  //             </span>
+  //           </div>
+  //         ) : (
+  //           <div className="d-flex justify-content-between mb-2">
+  //             <span className="text-muted">Productos</span>
+  //             <span>
+  //               {row.total_items} productos
+  //               <br />
+  //               <small className="text-muted">Total unidades: {row.total_cantidad}</small>
+  //             </span>
+  //           </div>
+  //         )}
+
+  //         {/* Sucursal */}
+  //         <div className="d-flex justify-content-between mb-2">
+  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
+  //             Sucursal
+  //           </span>
+  //           <span style={{ fontSize: '0.85rem', textAlign: 'right' }}>{row.label_sucursal}</span>
+  //         </div>
+
+  //         {/* Botones */}
+  //         <div className="d-flex gap-2">
+  //           {row.total_items > 1 && (
+  //             <CButton size="sm" color="info" className="w-100" onClick={() => verDetalle(row.id)}>
+  //               Ver detalle
+  //             </CButton>
+  //           )}
+
+  //           {puedeOperar && puedeAnular && row.estado !== 'ANULADO' && (
+  //             <CButton
+  //               size="sm"
+  //               color="danger"
+  //               className="w-100"
+  //               onClick={() => handleAnularMovimiento(row)}
+  //             >
+  //               Anular
+  //             </CButton>
+  //           )}
+  //         </div>
+  //       </CCardBody>
+  //     </CCard>
+  //   )
+  // }
+
   const MovimientoCard = ({ row, index }) => {
     let estado = row.estado
     let colorEstado = 'secondary'
@@ -124,7 +240,6 @@ const Movimientos = () => {
         estado = row.estado
     }
 
-    // Color según tipo movimiento
     let colorTipo = 'secondary'
     switch (row.tipo_movimiento) {
       case 'ENTRADA_INICIAL':
@@ -147,13 +262,15 @@ const Movimientos = () => {
       <CCard
         className="mb-3"
         style={{
-          backgroundColor: '#f8f9fb',
+          backgroundColor: '#ffffff', // 👈 FIX
           borderRadius: '20px',
           border: '1px solid #dee0e0',
           boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
         }}
       >
-        <CCardBody className="p-3">
+        <CCardBody className="p-3" style={{ color: '#000' }}>
+          {' '}
+          {/* 👈 FIX GLOBAL */}
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center mb-2">
             <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
@@ -161,44 +278,40 @@ const Movimientos = () => {
             </span>
             <CBadge color={colorEstado}>{estado}</CBadge>
           </div>
-
           {/* Fecha + Tipo */}
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <span className="text-muted" style={{ fontSize: '0.8rem' }}>
+            <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>
               {new Date(row.created_at).toLocaleDateString('es-BO')}
             </span>
 
             <CBadge color={colorTipo}>{row.tipo_movimiento}</CBadge>
           </div>
-
           {row.total_items === 1 ? (
             <div className="d-flex justify-content-between mb-2">
-              <span className="text-muted">Producto</span>
-              <span style={{ textAlign: 'right' }}>
+              <span style={{ color: '#6c757d' }}>Producto</span>
+              <span style={{ textAlign: 'right', color: '#000' }}>
                 {row.producto_unico}
                 <br />
-                <small className="text-muted">Cantidad: {row.cantidad_unica}</small>
+                <small style={{ color: '#6c757d' }}>Cantidad: {row.cantidad_unica}</small>
               </span>
             </div>
           ) : (
             <div className="d-flex justify-content-between mb-2">
-              <span className="text-muted">Productos</span>
-              <span>
+              <span style={{ color: '#6c757d' }}>Productos</span>
+              <span style={{ color: '#000' }}>
                 {row.total_items} productos
                 <br />
-                <small className="text-muted">Total unidades: {row.total_cantidad}</small>
+                <small style={{ color: '#6c757d' }}>Total unidades: {row.total_cantidad}</small>
               </span>
             </div>
           )}
-
           {/* Sucursal */}
           <div className="d-flex justify-content-between mb-2">
-            <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-              Sucursal
+            <span style={{ fontSize: '0.85rem', color: '#6c757d' }}>Sucursal</span>
+            <span style={{ fontSize: '0.85rem', textAlign: 'right', color: '#000' }}>
+              {row.label_sucursal}
             </span>
-            <span style={{ fontSize: '0.85rem', textAlign: 'right' }}>{row.label_sucursal}</span>
           </div>
-
           {/* Botones */}
           <div className="d-flex gap-2">
             {row.total_items > 1 && (

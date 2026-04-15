@@ -236,6 +236,82 @@ const Productos = () => {
     [],
   )
 
+  // const ProductoCard = ({ producto, index, onEditar, onToggle }) => {
+  //   const nombre = producto.nombre || ''
+  //   const marca = producto.marca?.trim()
+  //   const descripcion = producto.descripcion?.trim()
+
+  //   const primeraPalabra = nombre.split(' ')[0]
+  //   const resto = nombre.substring(primeraPalabra.length).trim()
+
+  //   const nombreFormateado = [primeraPalabra, marca || null, resto || null]
+  //     .filter(Boolean)
+  //     .join(' ')
+
+  //   const stock = Number(producto.stock ?? 0)
+
+  //   let stockColor = 'success'
+  //   if (stock === 0) stockColor = 'danger'
+  //   else if (stock <= 5) stockColor = 'warning'
+
+  //   return (
+  //     <CCard
+  //       className="mb-3"
+  //       style={{
+  //         backgroundColor: '#f8f9fb',
+  //         borderRadius: '20px',
+  //         border: '1px solid #dee0e0', // 👈 contorno delgado
+  //         boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
+  //       }}
+  //     >
+  //       <CCardBody>
+  //         {/* HEADER */}
+  //         <div className="d-flex justify-content-between align-items-center mb-2">
+  //           <div className="small text-secondary fw-medium">
+  //             #{index + 1} · {producto.codigo}
+  //           </div>
+
+  //           <CBadge color={producto.estado ? 'success' : 'secondary'} shape="rounded-pill">
+  //             {producto.estado ? 'Activo' : 'Inactivo'}
+  //           </CBadge>
+  //         </div>
+
+  //         {/* CATEGORÍA */}
+  //         {producto.categoria && <div className="small text-muted mb-1">{producto.categoria}</div>}
+
+  //         {/* NOMBRE */}
+  //         <div className="fw-semibold mb-1">{nombreFormateado}</div>
+
+  //         {descripcion && <div className="text-muted small mb-2">{descripcion}</div>}
+
+  //         {/* PRECIO */}
+  //         <div className="fw-bold fs-5 text-success">
+  //           Bs {Number(producto.precio_venta).toFixed(2)}
+  //         </div>
+
+  //         {/* STOCK TEXTO */}
+  //         <div className={`small mt-1 text-${stockColor}`}>Stock: {stock}</div>
+
+  //         {/* BOTONES */}
+  //         <div className="d-flex justify-content-end gap-2 mt-3">
+  //           <CButton size="sm" color="info" variant="outline" onClick={onEditar}>
+  //             <CIcon icon={cilPencil} />
+  //           </CButton>
+
+  //           <CButton
+  //             size="sm"
+  //             color={producto.estado ? 'danger' : 'success'}
+  //             variant="outline"
+  //             onClick={onToggle}
+  //           >
+  //             <CIcon icon={producto.estado ? cilBan : cilCheck} />
+  //           </CButton>
+  //         </div>
+  //       </CCardBody>
+  //     </CCard>
+  //   )
+  // }
+
   const ProductoCard = ({ producto, index, onEditar, onToggle }) => {
     const nombre = producto.nombre || ''
     const marca = producto.marca?.trim()
@@ -250,24 +326,26 @@ const Productos = () => {
 
     const stock = Number(producto.stock ?? 0)
 
-    let stockColor = 'success'
-    if (stock === 0) stockColor = 'danger'
-    else if (stock <= 5) stockColor = 'warning'
+    let stockColor = '#198754' // success
+    if (stock === 0) stockColor = '#dc3545'
+    else if (stock <= 5) stockColor = '#ffc107'
 
     return (
       <CCard
         className="mb-3"
         style={{
-          backgroundColor: '#f8f9fb',
+          backgroundColor: '#ffffff', // 👈 FIX fondo
           borderRadius: '20px',
-          border: '1px solid #dee0e0', // 👈 contorno delgado
+          border: '1px solid #dee0e0',
           boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
         }}
       >
-        <CCardBody>
+        <CCardBody style={{ color: '#000' }}>
+          {' '}
+          {/* 👈 FIX texto global */}
           {/* HEADER */}
           <div className="d-flex justify-content-between align-items-center mb-2">
-            <div className="small text-secondary fw-medium">
+            <div style={{ fontSize: '0.8rem', color: '#6c757d', fontWeight: 500 }}>
               #{index + 1} · {producto.codigo}
             </div>
 
@@ -275,23 +353,46 @@ const Productos = () => {
               {producto.estado ? 'Activo' : 'Inactivo'}
             </CBadge>
           </div>
-
           {/* CATEGORÍA */}
-          {producto.categoria && <div className="small text-muted mb-1">{producto.categoria}</div>}
-
+          {producto.categoria && (
+            <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>{producto.categoria}</div>
+          )}
           {/* NOMBRE */}
-          <div className="fw-semibold mb-1">{nombreFormateado}</div>
-
-          {descripcion && <div className="text-muted small mb-2">{descripcion}</div>}
-
+          <div
+            style={{
+              fontWeight: 600,
+              marginBottom: '4px',
+              color: '#000',
+            }}
+          >
+            {nombreFormateado}
+          </div>
+          {/* DESCRIPCIÓN */}
+          {descripcion && (
+            <div style={{ fontSize: '0.8rem', color: '#6c757d', marginBottom: '6px' }}>
+              {descripcion}
+            </div>
+          )}
           {/* PRECIO */}
-          <div className="fw-bold fs-5 text-success">
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: '1.2rem',
+              color: '#198754',
+            }}
+          >
             Bs {Number(producto.precio_venta).toFixed(2)}
           </div>
-
-          {/* STOCK TEXTO */}
-          <div className={`small mt-1 text-${stockColor}`}>Stock: {stock}</div>
-
+          {/* STOCK */}
+          <div
+            style={{
+              fontSize: '0.8rem',
+              marginTop: '4px',
+              color: stockColor,
+            }}
+          >
+            Stock: {stock}
+          </div>
           {/* BOTONES */}
           <div className="d-flex justify-content-end gap-2 mt-3">
             <CButton size="sm" color="info" variant="outline" onClick={onEditar}>

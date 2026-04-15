@@ -69,6 +69,7 @@ const Ventas = () => {
     try {
       const { data } = await ventasService.listar()
       setVentas(data.data ?? data)
+      console.log("Ventas", data.data);
     } catch (error) {
       console.error('Error cargando ventas', error)
       setVentas([])

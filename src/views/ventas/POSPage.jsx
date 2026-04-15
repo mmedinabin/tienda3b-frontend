@@ -611,11 +611,13 @@ const POSPage = () => {
                       style={{
                         borderRadius: '14px',
                         overflow: 'hidden',
-                        backgroundColor: 'rgba(111, 66, 193, 0.06)',
+                        backgroundColor: '#eeeeee', // 👈 FIX: fondo sólido
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <CCardBody>
+                      <CCardBody style={{ color: '#000' }}>
+                        {' '}
+                        {/* 👈 FIX GLOBAL */}
                         {/* 1️⃣ LABEL */}
                         <div
                           style={{
@@ -639,22 +641,23 @@ const POSPage = () => {
                           </span>
                           {construirLabel(p)}
                         </div>
-
                         {/* 2️⃣ PRECIO + CANTIDAD */}
                         <div className="mt-3">
                           <div className="d-flex justify-content-between">
                             {/* PRECIO */}
                             <div>
-                              <div className="small text-muted mb-1">Precio</div>
+                              <div className="small" style={{ color: '#6c757d' }}>
+                                Precio
+                              </div>
+
                               <div
                                 style={{
                                   fontSize: '1.05rem',
                                   fontWeight: 700,
                                   cursor: 'pointer',
-                                  color: '#111',
+                                  color: '#000', // 👈 FIX
                                 }}
                                 onClick={() => !loading && abrirPrecioManual(p)}
-                                //onClick={() => abrirPrecioManual(p)}
                               >
                                 Bs {Number(p.precio_venta).toFixed(2)}
                               </div>
@@ -662,7 +665,9 @@ const POSPage = () => {
 
                             {/* CANTIDAD */}
                             <div style={{ textAlign: 'center' }}>
-                              <div className="small text-muted mb-1">Cant.</div>
+                              <div className="small" style={{ color: '#6c757d' }}>
+                                Cant.
+                              </div>
 
                               <div className="d-flex align-items-center gap-2">
                                 <CButton
@@ -671,7 +676,6 @@ const POSPage = () => {
                                   onClick={() =>
                                     !loading && cambiarCantidad(p.producto_id, p.cantidad - 1)
                                   }
-                                  //onClick={() => cambiarCantidad(p.producto_id, p.cantidad - 1)}
                                 >
                                   -
                                 </CButton>
@@ -681,6 +685,7 @@ const POSPage = () => {
                                     minWidth: '30px',
                                     fontWeight: 600,
                                     cursor: 'pointer',
+                                    color: '#000', // 👈 FIX
                                   }}
                                   onClick={() => abrirCantidadManual(p)}
                                 >
@@ -698,10 +703,9 @@ const POSPage = () => {
                             </div>
                           </div>
                         </div>
-
                         {/* 3️⃣ SUBTOTAL + QUITAR */}
                         <div className="d-flex justify-content-between align-items-center mt-3">
-                          <div className="fw-semibold">
+                          <div className="fw-semibold" style={{ color: '#000' }}>
                             Subtotal: Bs {(p.cantidad * p.precio_venta).toFixed(2)}
                           </div>
 
@@ -716,6 +720,117 @@ const POSPage = () => {
                         </div>
                       </CCardBody>
                     </CCard>
+                    // <CCard
+                    //   key={p.producto_id}
+                    //   className="mb-3 border-0 shadow-sm"
+                    //   style={{
+                    //     borderRadius: '14px',
+                    //     overflow: 'hidden',
+                    //     backgroundColor: 'rgba(111, 66, 193, 0.06)',
+                    //     transition: 'all 0.15s ease',
+                    //   }}
+                    // >
+                    //   <CCardBody>
+                    //     {/* 1️⃣ LABEL */}
+                    //     <div
+                    //       style={{
+                    //         fontWeight: 600,
+                    //         fontSize: '0.95rem',
+                    //         lineHeight: '1.2rem',
+                    //         display: '-webkit-box',
+                    //         WebkitLineClamp: 2,
+                    //         WebkitBoxOrient: 'vertical',
+                    //         overflow: 'hidden',
+                    //         wordBreak: 'break-word',
+                    //       }}
+                    //     >
+                    //       <span
+                    //         style={{
+                    //           color: '#6c757d',
+                    //           marginRight: '6px',
+                    //         }}
+                    //       >
+                    //         #{index + 1}
+                    //       </span>
+                    //       {construirLabel(p)}
+                    //     </div>
+
+                    //     {/* 2️⃣ PRECIO + CANTIDAD */}
+                    //     <div className="mt-3">
+                    //       <div className="d-flex justify-content-between">
+                    //         {/* PRECIO */}
+                    //         <div>
+                    //           <div className="small text-muted mb-1">Precio</div>
+                    //           <div
+                    //             style={{
+                    //               fontSize: '1.05rem',
+                    //               fontWeight: 700,
+                    //               cursor: 'pointer',
+                    //               color: '#111',
+                    //             }}
+                    //             onClick={() => !loading && abrirPrecioManual(p)}
+                    //             //onClick={() => abrirPrecioManual(p)}
+                    //           >
+                    //             Bs {Number(p.precio_venta).toFixed(2)}
+                    //           </div>
+                    //         </div>
+
+                    //         {/* CANTIDAD */}
+                    //         <div style={{ textAlign: 'center' }}>
+                    //           <div className="small text-muted mb-1">Cant.</div>
+
+                    //           <div className="d-flex align-items-center gap-2">
+                    //             <CButton
+                    //               size="sm"
+                    //               color="danger"
+                    //               onClick={() =>
+                    //                 !loading && cambiarCantidad(p.producto_id, p.cantidad - 1)
+                    //               }
+                    //               //onClick={() => cambiarCantidad(p.producto_id, p.cantidad - 1)}
+                    //             >
+                    //               -
+                    //             </CButton>
+
+                    //             <span
+                    //               style={{
+                    //                 minWidth: '30px',
+                    //                 fontWeight: 600,
+                    //                 cursor: 'pointer',
+                    //               }}
+                    //               onClick={() => abrirCantidadManual(p)}
+                    //             >
+                    //               {p.cantidad}
+                    //             </span>
+
+                    //             <CButton
+                    //               size="sm"
+                    //               color="success"
+                    //               onClick={() => cambiarCantidad(p.producto_id, p.cantidad + 1)}
+                    //             >
+                    //               +
+                    //             </CButton>
+                    //           </div>
+                    //         </div>
+                    //       </div>
+                    //     </div>
+
+                    //     {/* 3️⃣ SUBTOTAL + QUITAR */}
+                    //     <div className="d-flex justify-content-between align-items-center mt-3">
+                    //       <div className="fw-semibold">
+                    //         Subtotal: Bs {(p.cantidad * p.precio_venta).toFixed(2)}
+                    //       </div>
+
+                    //       <CButton
+                    //         color="danger"
+                    //         variant="outline"
+                    //         size="sm"
+                    //         onClick={() => eliminar(p.producto_id)}
+                    //       >
+                    //         Quitar
+                    //       </CButton>
+                    //     </div>
+                    //   </CCardBody>
+                    // </CCard>
                   ))
                 )}
               </div>

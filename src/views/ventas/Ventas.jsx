@@ -69,20 +69,14 @@ const Ventas = () => {
     try {
       const { data } = await ventasService.listar()
       setVentas(data.data ?? data)
-      console.log("Ventas", data.data);
     } catch (error) {
       console.error('Error cargando ventas', error)
       setVentas([])
     }
   }
 
-  const handleEditar = (venta) => {
-    navigate('/ventas', {
-      state: {
-        modo: 'editar',
-        venta,
-      },
-    })
+  const handleEditar = (row) => {
+    navigate(`/ventas?modo=editar&id=${row.id}`)
   }
 
   const descargarPDF = async (row) => {
@@ -224,15 +218,6 @@ const Ventas = () => {
           <CBadge color="success">Pagado</CBadge>
         ),
     },
-    // {
-    //   key: 'acciones',
-    //   label: '',
-    //   render: (row) => (
-    //     <CButton size="sm" color="info" onClick={() => descargarPDF(row)}>
-    //       Ver PDF
-    //     </CButton>
-    //   ),
-    // },
     {
       key: 'acciones',
       label: '',
@@ -242,14 +227,8 @@ const Ventas = () => {
             PDF
           </CButton>
 
-          {/* {esAdmin && row.estado !== 'ANULADA' && (
-            <CButton size="sm" color="warning" onClick={() => handleEditar(row)}>
-              Editar
-            </CButton>
-          )} */}
-
           {puedeOperar && puedeAnular && row.estado !== 'ANULADA' && (
-            <CButton size="sm" color="warning" onClick={() => handleAnular(row)}>
+            <CButton size="sm" color="warning" onClick={() => handleEditar(row)}>
               Editar
             </CButton>
           )}
@@ -263,79 +242,6 @@ const Ventas = () => {
       ),
     },
   ]
-
-  // const VentaCard = ({ row, index }) => {
-  //   const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
-
-  //   return (
-  //     <CCard
-  //       className="mb-3"
-  //       style={{
-  //         backgroundColor: '#f8f9fb',
-  //         borderRadius: '20px',
-  //         border: '1px solid #dee0e0', // 👈 contorno delgado
-  //         boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
-  //       }}
-  //     >
-  //       <CCardBody className="p-3">
-  //         {/* Header */}
-  //         <div className="d-flex justify-content-between align-items-center mb-2">
-  //           <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
-  //             #{index + 1} · {row.codigo}
-  //           </span>
-
-  //           <CBadge
-  //             color={row.estado === 'ANULADA' ? 'danger' : row.saldo > 0 ? 'warning' : 'success'}
-  //           >
-  //             {row.estado === 'ANULADA' ? 'Anulada' : row.saldo > 0 ? 'Pendiente' : 'Pagado'}
-  //           </CBadge>
-  //         </div>
-
-  //         {/* Fecha + Tipo pago */}
-  //         <div className="d-flex justify-content-between align-items-center mb-3">
-  //           <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-  //             {new Date(row.fecha).toLocaleString()}
-  //           </span>
-
-  //           <CBadge
-  //             color={
-  //               row.tipo_pago === 'EFECTIVO'
-  //                 ? 'success'
-  //                 : row.tipo_pago === 'TRANSFERENCIA'
-  //                   ? 'info'
-  //                   : 'warning'
-  //             }
-  //           >
-  //             {row.tipo_pago}
-  //           </CBadge>
-  //         </div>
-
-  //         {/* Cliente alineado */}
-  //         <div className="d-flex justify-content-between align-items-center mb-2">
-  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-  //             Cliente
-  //           </span>
-  //           <span style={{ fontSize: '0.85rem' }}>{esGeneral ? 'General' : row.cliente}</span>
-  //         </div>
-
-  //         {/* Total */}
-  //         <div className="d-flex justify-content-between align-items-center mb-4">
-  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-  //             Total
-  //           </span>
-  //           <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
-  //             Bs {Number(row.total).toFixed(2)}
-  //           </span>
-  //         </div>
-
-  //         {/* Botón principal */}
-  //         <CButton size="sm" color="primary" className="w-100" onClick={() => abrirDetalle(row)}>
-  //           Ver detalle
-  //         </CButton>
-  //       </CCardBody>
-  //     </CCard>
-  //   )
-  // }
 
   const VentaCard = ({ row, index }) => {
     const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
@@ -400,9 +306,28 @@ const Ventas = () => {
           </div>
 
           {/* Botón */}
-          <CButton size="sm" color="primary" className="w-100" onClick={() => abrirDetalle(row)}>
-            Ver detalle
-          </CButton>
+
+          <div className="d-flex gap-2">
+            <CButton
+              size="sm"
+              color="primary"
+              className="flex-fill"
+              onClick={() => abrirDetalle(row)}
+            >
+              Ver detalle
+            </CButton>
+
+            {row.estado !== 'ANULADA' && (
+              <CButton
+                size="sm"
+                color="warning"
+                className="flex-fill"
+                onClick={() => handleEditar(row)}
+              >
+                Modificar
+              </CButton>
+            )}
+          </div>
         </CCardBody>
       </CCard>
     )

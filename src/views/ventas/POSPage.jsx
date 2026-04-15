@@ -1,3 +1,4 @@
+//import { useNavigate, useLocation } from 'react-router-dom'
 import React, { useEffect, useMemo, useState } from 'react'
 import { CRow, CCol, CCard, CCardBody, CButton, CFormInput, CFormSelect } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -8,11 +9,22 @@ import Select from 'react-select'
 import { productosService } from '../../services/productos.service'
 import { ventasService } from '../../services/ventas.service'
 import { clientesService } from '../../services/clientes.service'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../../store/auth.store'
 
 const POSPage = () => {
   const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
+
+  const location = useLocation()
+
+  const [searchParams] = useSearchParams()
+  const id = searchParams.get('id')
+  const modo = searchParams.get('modo') || 'crear'
+  const isEdit = modo === 'editar'
+  const bloqueando = React.useRef(false)
+
+  //const modo = location.state?.modo || 'CREAR'
+  const ventaEditando = location.state?.venta || null
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
@@ -35,6 +47,18 @@ const POSPage = () => {
   const [tipoPago, setTipoPago] = useState('EFECTIVO')
   const [montoRecibido, setMontoRecibido] = useState('')
   const [loading, setLoading] = useState(false)
+  const [codigoVenta, setCodigoVenta] = useState('')
+
+  const resetPOS = () => {
+    setCarrito([])
+    setClienteId('')
+    setTipoPago('EFECTIVO')
+    setMontoRecibido('')
+  }
+
+  const salirDeEdicion = () => {
+    navigate('/ventas') // o ruta base POS
+  }
 
   useEffect(() => {
     if (!sucursalActiva) {
@@ -51,7 +75,10 @@ const POSPage = () => {
         await cargarProductos()
         await cargarClientes()
 
-        setCarrito([])
+        if (modo !== 'editar') {
+          setCarrito([])
+        }
+        //setCarrito([])
       } catch (error) {
         console.error('Error recargando POS')
       } finally {
@@ -61,6 +88,45 @@ const POSPage = () => {
 
     cargarData()
   }, [sucursalActiva])
+
+  useEffect(() => {
+    if (clientes.length === 0) return
+
+    if (clienteId == null) return
+
+    const existe = clientes.find((c) => c.id === Number(clienteId))
+
+    if (!existe) {
+      console.warn('Cliente de venta no está en listado')
+    }
+  }, [clientes])
+
+  useEffect(() => {
+    const cargar = async () => {
+      if (modo === 'editar' && id) {
+        const { data } = await ventasService.obtener(id)
+
+        const venta = data
+        setCodigoVenta(venta.codigo)
+
+        setClienteId(Number(venta.cliente_id))
+        setTipoPago(venta.tipo_pago)
+
+        setCarrito(
+          venta.productos.map((p) => ({
+            producto_id: p.producto_id,
+            nombre: p.producto,
+            cantidad: Number(p.cantidad),
+            cantidadOriginal: Number(p.cantidad),
+            precio_venta: Number(p.precio_unitario),
+            subtotal: Number(p.precio_subtotal),
+          })),
+        )
+      }
+    }
+
+    cargar()
+  }, [id, modo])
 
   const cargarProductos = async () => {
     const res = await productosService.listarPOS()
@@ -72,6 +138,7 @@ const POSPage = () => {
     const data = res.data || []
 
     setClientes(data)
+    if (modo === 'editar') return
 
     const clienteDefault = data.find((c) => c.nombre === 'SIN NOMBRE') || data[0]
 
@@ -103,10 +170,43 @@ const POSPage = () => {
   ====================== */
 
   const agregarProducto = (producto) => {
-    const existe = carrito.find((p) => p.producto_id === producto.id)
+    const existente = carrito.find((p) => p.producto_id === producto.id)
 
-    if (existe) {
-      if (existe.cantidad + 1 > producto.stock) {
+    const stockReal = Number(producto.stock || 0)
+
+    if (!isEdit) {
+      // 🔥 CREAR VENTA
+      if (existente) {
+        if (existente.cantidad + 1 > stockReal) {
+          Swal.fire('Stock insuficiente')
+          return
+        }
+
+        setCarrito(
+          carrito.map((p) =>
+            p.producto_id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p,
+          ),
+        )
+      } else {
+        setCarrito([
+          ...carrito,
+          {
+            producto_id: producto.id,
+            nombre: producto.nombre,
+            cantidad: 1,
+            precio_venta: Number(producto.precio_venta),
+          },
+        ])
+      }
+
+      return
+    }
+
+    // 🔥 EDITAR VENTA
+    const stockMax = stockReal + (existente?.cantidadOriginal || existente?.cantidad || 0)
+
+    if (existente) {
+      if (existente.cantidad + 1 > stockMax) {
         Swal.fire('Stock insuficiente')
         return
       }
@@ -122,26 +222,76 @@ const POSPage = () => {
         {
           producto_id: producto.id,
           nombre: producto.nombre,
-          marca: producto.marca,
-          descripcion: producto.descripcion,
           cantidad: 1,
-          precio_original: Number(producto.precio_venta),
+          cantidadOriginal: 1,
           precio_venta: Number(producto.precio_venta),
-          stock: producto.stock,
         },
       ])
     }
+  }
+  // const agregarProducto = (producto) => {
+  //   const existe = carrito.find((p) => p.producto_id === producto.id)
+
+  //   if (existe) {
+  //     if (existe.cantidad + 1 > producto.stock) {
+  //       Swal.fire('Stock insuficiente')
+  //       return
+  //     }
+
+  //     setCarrito(
+  //       carrito.map((p) =>
+  //         p.producto_id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p,
+  //       ),
+  //     )
+  //   } else {
+  //     setCarrito([
+  //       ...carrito,
+  //       {
+  //         producto_id: producto.id,
+  //         nombre: producto.nombre,
+  //         marca: producto.marca,
+  //         descripcion: producto.descripcion,
+  //         cantidad: 1,
+  //         precio_original: Number(producto.precio_venta),
+  //         precio_venta: Number(producto.precio_venta),
+  //         stock: producto.stock,
+  //       },
+  //     ])
+  //   }
+  // }
+
+  const getStockMax = (productoId, itemCarrito) => {
+    const prod = productos.find((p) => p.id === productoId)
+    const stockReal = Number(prod?.stock || 0)
+
+    if (!isEdit) {
+      return stockReal // 🔥 creación
+    }
+
+    const cantidadOriginal = itemCarrito?.cantidadOriginal || itemCarrito?.cantidad || 0
+
+    return stockReal + cantidadOriginal
+  }
+
+  const getStockReal = (productoId) => {
+    const prod = productos.find((p) => p.id === productoId)
+    return Number(prod?.stock || 0)
   }
 
   const cambiarCantidad = (id, nueva) => {
     setCarrito((prev) =>
       prev.map((p) => {
         if (p.producto_id !== id) return p
-        if (nueva <= 0) return p
-        if (nueva > p.stock) {
+
+        const stockMax = getStockMax(id, p)
+
+        if (nueva > stockMax) {
           Swal.fire('Stock insuficiente')
           return p
         }
+
+        if (nueva <= 0) return p
+
         return { ...p, cantidad: nueva }
       }),
     )
@@ -174,75 +324,43 @@ const POSPage = () => {
     return clientes.find((c) => c.nombre === 'SIN NOMBRE') || clientes[0]
   }
 
-  // const cobrarrr = async () => {
-  //   if (loading) return
+  const cancelarEdicion = () => {
+    Swal.fire({
+      title: '¿Cancelar edición?',
+      text: 'Se perderán los cambios realizados',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (!result.isConfirmed) return
 
-  //   setLoading(true)
+      // limpiar estado del POS
+      setCarrito([])
+      setClienteId('')
+      setTipoPago('EFECTIVO')
+      setMontoRecibido('')
+      setCodigoVenta('')
 
-  //   if (carrito.length === 0) {
-  //     Swal.fire('No hay productos')
-  //     setLoading(false)
-  //     return
-  //   }
-
-  //   if (tipoPago === 'EFECTIVO' && vuelto < 0) {
-  //     Swal.fire('Monto insuficiente')
-  //     setLoading(false)
-  //     return
-  //   }
-
-  //   try {
-  //     const payload = {
-  //       cliente_id: clienteId || null,
-  //       tipo_pago: tipoPago,
-  //       productos: carrito.map((p) => ({
-  //         producto_id: p.producto_id,
-  //         cantidad: p.cantidad,
-  //         precio_venta: p.precio_venta,
-  //       })),
-  //     }
-
-  //     const res = await ventasService(payload)
-
-  //     Swal.fire('Venta registrada', res.codigo, 'success')
-
-  //     setCarrito([])
-  //     setMontoRecibido('')
-
-  //     setTipoPago('EFECTIVO')
-
-  //     const clienteDefault = obtenerClienteDefault()
-  //     if (clienteDefault) {
-  //       setClienteId(clienteDefault.id)
-  //     }
-
-  //     await cargarProductos()
-  //   } catch (error) {
-  //     Swal.fire('Error', error.response?.data?.message, 'error')
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+      // redirigir a POS en modo creación
+      navigate('/ventas?modo=crear', { replace: true })
+    })
+  }
 
   const cobrar = async () => {
-    if (loading) return
+    if (bloqueando.current) return
+    bloqueando.current = true
+
     setLoading(true)
 
-    if (carrito.length === 0) {
-      Swal.fire('No hay productos')
-      setLoading(false)
-      return
-    }
-
-    if (tipoPago === 'EFECTIVO' && vuelto < 0) {
-      Swal.fire('Monto insuficiente')
-      setLoading(false)
-      return
-    }
-
     try {
+      if (!carrito.length) {
+        Swal.fire('No hay productos')
+        return
+      }
+
       const payload = {
-        cliente_id: clienteId || null,
+        cliente_id: clienteId,
         tipo_pago: tipoPago,
         productos: carrito.map((p) => ({
           producto_id: p.producto_id,
@@ -251,28 +369,36 @@ const POSPage = () => {
         })),
       }
 
-      const { data } = await ventasService.crear(payload)
+      if (modo === 'editar') {
+        await ventasService.reemplazar(id, payload)
+      } else {
+        await ventasService.crear(payload)
+      }
 
       await Swal.fire({
         icon: 'success',
-        title: 'Venta registrada',
-        text: data.codigo,
-        timer: 2000,
+        title: isEdit ? 'Venta modificada' : 'Venta registrada',
+        //title: 'Venta registrada',
+        timer: 1500,
         showConfirmButton: false,
       })
 
-      setCarrito([])
-      setMontoRecibido('')
-      setTipoPago('EFECTIVO')
+      resetPOS()
+      if (modo === 'editar') {
+        navigate('/ventas') // o POS limpio
+      }
 
-      const clienteDefault = obtenerClienteDefault()
+      const clienteDefault = clientes.find((c) => c.nombre === 'SIN NOMBRE') || clientes[0]
       if (clienteDefault) setClienteId(clienteDefault.id)
 
+      // opcional: refrescar productos
       await cargarProductos()
     } catch (error) {
-      Swal.fire('Error', error.response?.data?.message || 'Error al registrar', 'error')
+      console.error(error)
+      Swal.fire('Error', error.response?.data?.message || 'Error al guardar')
     } finally {
       setLoading(false)
+      bloqueando.current = false
     }
   }
 
@@ -382,20 +508,6 @@ const POSPage = () => {
                     Ver ventas recientes
                   </CButton>
                 </div>
-
-                {/* Select */}
-                {/* <Select
-                  options={productos.map((p) => ({
-                    value: p.id,
-                    label: `${p.marca ? p.marca + ' - ' : ''}${p.nombre}${p.descripcion ? ' - ' + p.descripcion : ''} | Bs ${p.precio_venta}`,
-                  }))}
-                  placeholder="Escribe para buscar..."
-                  onChange={(selected) => {
-                    const producto = productos.find((p) => p.id === selected.value)
-                    if (producto) agregarProducto(producto)
-                  }}
-                  isSearchable
-                /> */}
 
                 <Select
                   options={productos.map((p) => ({
@@ -561,7 +673,10 @@ const POSPage = () => {
                 borderTopRightRadius: '14px',
               }}
             >
-              <span>🧾 Nueva venta</span>
+              {/* <span>🧾 Nueva venta</span> */}
+              <span>
+                {modo === 'editar' ? `✏️ Editando venta: ${codigoVenta}` : '🧾 Nueva venta'}
+              </span>
 
               <span
                 style={{
@@ -580,7 +695,12 @@ const POSPage = () => {
               {/* CLIENTE */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">Cliente</label>
-                <CFormSelect value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
+
+                <CFormSelect
+                  value={clienteId}
+                  disabled={modo === 'editar'}
+                  onChange={(e) => setClienteId(Number(e.target.value))}
+                >
                   {clientes.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.nombre}
@@ -695,7 +815,13 @@ const POSPage = () => {
                                 <CButton
                                   size="sm"
                                   color="success"
-                                  onClick={() => cambiarCantidad(p.producto_id, p.cantidad + 1)}
+                                  onClick={() =>
+                                    cambiarCantidad(
+                                      p.producto_id,
+                                      p.cantidad + 1,
+                                      getStockReal(p.producto_id),
+                                    )
+                                  }
                                 >
                                   +
                                 </CButton>
@@ -720,117 +846,6 @@ const POSPage = () => {
                         </div>
                       </CCardBody>
                     </CCard>
-                    // <CCard
-                    //   key={p.producto_id}
-                    //   className="mb-3 border-0 shadow-sm"
-                    //   style={{
-                    //     borderRadius: '14px',
-                    //     overflow: 'hidden',
-                    //     backgroundColor: 'rgba(111, 66, 193, 0.06)',
-                    //     transition: 'all 0.15s ease',
-                    //   }}
-                    // >
-                    //   <CCardBody>
-                    //     {/* 1️⃣ LABEL */}
-                    //     <div
-                    //       style={{
-                    //         fontWeight: 600,
-                    //         fontSize: '0.95rem',
-                    //         lineHeight: '1.2rem',
-                    //         display: '-webkit-box',
-                    //         WebkitLineClamp: 2,
-                    //         WebkitBoxOrient: 'vertical',
-                    //         overflow: 'hidden',
-                    //         wordBreak: 'break-word',
-                    //       }}
-                    //     >
-                    //       <span
-                    //         style={{
-                    //           color: '#6c757d',
-                    //           marginRight: '6px',
-                    //         }}
-                    //       >
-                    //         #{index + 1}
-                    //       </span>
-                    //       {construirLabel(p)}
-                    //     </div>
-
-                    //     {/* 2️⃣ PRECIO + CANTIDAD */}
-                    //     <div className="mt-3">
-                    //       <div className="d-flex justify-content-between">
-                    //         {/* PRECIO */}
-                    //         <div>
-                    //           <div className="small text-muted mb-1">Precio</div>
-                    //           <div
-                    //             style={{
-                    //               fontSize: '1.05rem',
-                    //               fontWeight: 700,
-                    //               cursor: 'pointer',
-                    //               color: '#111',
-                    //             }}
-                    //             onClick={() => !loading && abrirPrecioManual(p)}
-                    //             //onClick={() => abrirPrecioManual(p)}
-                    //           >
-                    //             Bs {Number(p.precio_venta).toFixed(2)}
-                    //           </div>
-                    //         </div>
-
-                    //         {/* CANTIDAD */}
-                    //         <div style={{ textAlign: 'center' }}>
-                    //           <div className="small text-muted mb-1">Cant.</div>
-
-                    //           <div className="d-flex align-items-center gap-2">
-                    //             <CButton
-                    //               size="sm"
-                    //               color="danger"
-                    //               onClick={() =>
-                    //                 !loading && cambiarCantidad(p.producto_id, p.cantidad - 1)
-                    //               }
-                    //               //onClick={() => cambiarCantidad(p.producto_id, p.cantidad - 1)}
-                    //             >
-                    //               -
-                    //             </CButton>
-
-                    //             <span
-                    //               style={{
-                    //                 minWidth: '30px',
-                    //                 fontWeight: 600,
-                    //                 cursor: 'pointer',
-                    //               }}
-                    //               onClick={() => abrirCantidadManual(p)}
-                    //             >
-                    //               {p.cantidad}
-                    //             </span>
-
-                    //             <CButton
-                    //               size="sm"
-                    //               color="success"
-                    //               onClick={() => cambiarCantidad(p.producto_id, p.cantidad + 1)}
-                    //             >
-                    //               +
-                    //             </CButton>
-                    //           </div>
-                    //         </div>
-                    //       </div>
-                    //     </div>
-
-                    //     {/* 3️⃣ SUBTOTAL + QUITAR */}
-                    //     <div className="d-flex justify-content-between align-items-center mt-3">
-                    //       <div className="fw-semibold">
-                    //         Subtotal: Bs {(p.cantidad * p.precio_venta).toFixed(2)}
-                    //       </div>
-
-                    //       <CButton
-                    //         color="danger"
-                    //         variant="outline"
-                    //         size="sm"
-                    //         onClick={() => eliminar(p.producto_id)}
-                    //       >
-                    //         Quitar
-                    //       </CButton>
-                    //     </div>
-                    //   </CCardBody>
-                    // </CCard>
                   ))
                 )}
               </div>
@@ -839,7 +854,6 @@ const POSPage = () => {
 
               {/* TOTAL */}
               {!isMobile && <h5>Total: Bs {total.toFixed(2)}</h5>}
-              {/* <h5>Total: Bs {total.toFixed(2)}</h5> */}
 
               {/* TIPO PAGO */}
               <CFormSelect
@@ -866,21 +880,78 @@ const POSPage = () => {
 
               {/* BOTÓN DESKTOP */}
               {!isMobile && (
-                <CButton
-                  color="success"
-                  className="w-100 mt-3"
-                  onClick={cobrar}
-                  disabled={loading || carrito.length === 0}
-                >
-                  {loading ? 'Procesando...' : 'Finalizar Venta'}
-                </CButton>
+                <div className="d-flex gap-2 mt-3">
+                  <CButton
+                    color="success"
+                    className="flex-fill"
+                    onClick={cobrar}
+                    disabled={loading || carrito.length === 0}
+                  >
+                    {loading
+                      ? 'Procesando...'
+                      : isEdit
+                        ? 'Guardar modificación'
+                        : 'Finalizar venta'}
+                  </CButton>
+
+                  {isEdit && (
+                    <CButton color="secondary" className="flex-fill" onClick={cancelarEdicion}>
+                      Cancelar
+                    </CButton>
+                  )}
+                </div>
               )}
             </CCardBody>
           </CCard>
         </div>
 
         {/* BOTÓN FIJO MOBILE */}
+
         {isMobile && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background: '#fff',
+              padding: 12,
+              borderTop: '1px solid #ddd',
+              zIndex: 1000,
+              boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
+            }}
+          >
+            {/* TOTAL */}
+            <div className="d-flex justify-content-between mb-2">
+              <strong>Total:</strong>
+              <strong>Bs {total.toFixed(2)}</strong>
+            </div>
+
+            {/* BOTÓN PRINCIPAL */}
+            <CButton
+              color={carrito.length === 0 ? 'secondary' : 'primary'}
+              size="lg"
+              className="w-100 fw-semibold"
+              style={{
+                borderRadius: '12px',
+                height: '48px',
+              }}
+              onClick={cobrar}
+              disabled={carrito.length === 0 || loading}
+            >
+              {loading ? 'Procesando...' : isEdit ? 'Guardar modificación' : 'Finalizar Venta'}
+            </CButton>
+
+            {/* BOTÓN SECUNDARIO (solo edición) */}
+            {isEdit && (
+              <CButton color="secondary" size="sm" className="w-100 mt-2" onClick={cancelarEdicion}>
+                Cancelar edición
+              </CButton>
+            )}
+          </div>
+        )}
+
+        {/* {isMobile && (
           <div
             style={{
               position: 'fixed',
@@ -910,10 +981,10 @@ const POSPage = () => {
               onClick={cobrar}
               disabled={carrito.length === 0 || loading}
             >
-              {loading ? 'Procesando...' : `Finalizar Venta`}
+              {loading ? 'Procesando...' : isEdit ? 'Guardar modificación' : 'Finalizar Venta'}
             </CButton>
           </div>
-        )}
+        )} */}
       </CCol>
     </CRow>
   )

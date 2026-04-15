@@ -1,4 +1,3 @@
-
 import api from '../api/api'
 
 export const ventasService = {
@@ -11,4 +10,6 @@ export const ventasService = {
   pdf: (id) => api.get(`/ventas/${id}/pdf`, { responseType: 'blob' }),
 
   anular: (id, motivo) => api.put(`/ventas/${id}/anular`, { motivo }),
+  
+  reemplazar: (id, data) => api.put(`/ventas/${id}/reemplazar`, data),
 }

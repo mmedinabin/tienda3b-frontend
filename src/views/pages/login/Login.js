@@ -19,7 +19,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 
 import { loginRequest, getPerfil } from '../../../api/auth.service'
 import { useAuthStore } from '../../../store/auth.store'
-import logo from '../../../assets/images/login3.png'
+import logo from '../../../assets/images/login3.webp'
 import InstallPWA from '../../../components/InstallPWA'
 
 const Login = () => {

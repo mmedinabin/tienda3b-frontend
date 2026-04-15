@@ -22,6 +22,9 @@ const Ventas = () => {
   const [ventas, setVentas] = useState([])
   const [cargando, setCargando] = useState(true)
 
+  const perfil = useAuthStore((state) => state.perfil)
+  const esAdmin = perfil?.rol === 'ADMIN'
+
   const permisos = useAuthStore((state) => state.permisos)
   const puedeAnular = permisos?.some((p) => p.clave === 'VENTAS' && p.puede_eliminar === 1)
 
@@ -70,6 +73,15 @@ const Ventas = () => {
       console.error('Error cargando ventas', error)
       setVentas([])
     }
+  }
+
+  const handleEditar = (venta) => {
+    navigate('/ventas', {
+      state: {
+        modo: 'editar',
+        venta,
+      },
+    })
   }
 
   const descargarPDF = async (row) => {
@@ -229,6 +241,18 @@ const Ventas = () => {
             PDF
           </CButton>
 
+          {/* {esAdmin && row.estado !== 'ANULADA' && (
+            <CButton size="sm" color="warning" onClick={() => handleEditar(row)}>
+              Editar
+            </CButton>
+          )} */}
+
+          {puedeOperar && puedeAnular && row.estado !== 'ANULADA' && (
+            <CButton size="sm" color="warning" onClick={() => handleAnular(row)}>
+              Editar
+            </CButton>
+          )}
+
           {puedeOperar && puedeAnular && row.estado !== 'ANULADA' && (
             <CButton size="sm" color="danger" onClick={() => handleAnular(row)}>
               Anular
@@ -239,6 +263,79 @@ const Ventas = () => {
     },
   ]
 
+  // const VentaCard = ({ row, index }) => {
+  //   const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
+
+  //   return (
+  //     <CCard
+  //       className="mb-3"
+  //       style={{
+  //         backgroundColor: '#f8f9fb',
+  //         borderRadius: '20px',
+  //         border: '1px solid #dee0e0', // 👈 contorno delgado
+  //         boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
+  //       }}
+  //     >
+  //       <CCardBody className="p-3">
+  //         {/* Header */}
+  //         <div className="d-flex justify-content-between align-items-center mb-2">
+  //           <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
+  //             #{index + 1} · {row.codigo}
+  //           </span>
+
+  //           <CBadge
+  //             color={row.estado === 'ANULADA' ? 'danger' : row.saldo > 0 ? 'warning' : 'success'}
+  //           >
+  //             {row.estado === 'ANULADA' ? 'Anulada' : row.saldo > 0 ? 'Pendiente' : 'Pagado'}
+  //           </CBadge>
+  //         </div>
+
+  //         {/* Fecha + Tipo pago */}
+  //         <div className="d-flex justify-content-between align-items-center mb-3">
+  //           <span className="text-muted" style={{ fontSize: '0.8rem' }}>
+  //             {new Date(row.fecha).toLocaleString()}
+  //           </span>
+
+  //           <CBadge
+  //             color={
+  //               row.tipo_pago === 'EFECTIVO'
+  //                 ? 'success'
+  //                 : row.tipo_pago === 'TRANSFERENCIA'
+  //                   ? 'info'
+  //                   : 'warning'
+  //             }
+  //           >
+  //             {row.tipo_pago}
+  //           </CBadge>
+  //         </div>
+
+  //         {/* Cliente alineado */}
+  //         <div className="d-flex justify-content-between align-items-center mb-2">
+  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
+  //             Cliente
+  //           </span>
+  //           <span style={{ fontSize: '0.85rem' }}>{esGeneral ? 'General' : row.cliente}</span>
+  //         </div>
+
+  //         {/* Total */}
+  //         <div className="d-flex justify-content-between align-items-center mb-4">
+  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
+  //             Total
+  //           </span>
+  //           <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
+  //             Bs {Number(row.total).toFixed(2)}
+  //           </span>
+  //         </div>
+
+  //         {/* Botón principal */}
+  //         <CButton size="sm" color="primary" className="w-100" onClick={() => abrirDetalle(row)}>
+  //           Ver detalle
+  //         </CButton>
+  //       </CCardBody>
+  //     </CCard>
+  //   )
+  // }
+
   const VentaCard = ({ row, index }) => {
     const esGeneral = row.cliente_id === 0 || !row.cliente || row.cliente === 'SIN NOMBRE'
 
@@ -248,11 +345,11 @@ const Ventas = () => {
         style={{
           backgroundColor: '#f8f9fb',
           borderRadius: '20px',
-          border: '1px solid #dee0e0', // 👈 contorno delgado
+          border: '1px solid #dee0e0',
           boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
         }}
       >
-        <CCardBody className="p-3">
+        <CCardBody className="p-3" style={{ color: '#000' }}>
           {/* Header */}
           <div className="d-flex justify-content-between align-items-center mb-2">
             <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
@@ -268,7 +365,7 @@ const Ventas = () => {
 
           {/* Fecha + Tipo pago */}
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <span className="text-muted" style={{ fontSize: '0.8rem' }}>
+            <span style={{ fontSize: '0.8rem', color: '#555' }}>
               {new Date(row.fecha).toLocaleString()}
             </span>
 
@@ -285,25 +382,23 @@ const Ventas = () => {
             </CBadge>
           </div>
 
-          {/* Cliente alineado */}
+          {/* Cliente */}
           <div className="d-flex justify-content-between align-items-center mb-2">
-            <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-              Cliente
+            <span style={{ fontSize: '0.85rem', color: '#555' }}>Cliente</span>
+            <span style={{ fontSize: '0.85rem', color: '#000' }}>
+              {esGeneral ? 'General' : row.cliente}
             </span>
-            <span style={{ fontSize: '0.85rem' }}>{esGeneral ? 'General' : row.cliente}</span>
           </div>
 
           {/* Total */}
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-              Total
-            </span>
-            <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
+            <span style={{ fontSize: '0.85rem', color: '#555' }}>Total</span>
+            <span className="fw-bold" style={{ fontSize: '1.1rem', color: '#000' }}>
               Bs {Number(row.total).toFixed(2)}
             </span>
           </div>
 
-          {/* Botón principal */}
+          {/* Botón */}
           <CButton size="sm" color="primary" className="w-100" onClick={() => abrirDetalle(row)}>
             Ver detalle
           </CButton>
@@ -311,7 +406,6 @@ const Ventas = () => {
       </CCard>
     )
   }
-
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -426,11 +520,14 @@ const Ventas = () => {
           </CButton>
 
           <div className="d-flex gap-2">
-            {ventaSeleccionada && puedeOperar && puedeAnular && ventaSeleccionada.estado !== 'ANULADA' && (
-              <CButton color="danger" onClick={() => handleAnular(ventaSeleccionada)}>
-                Anular
-              </CButton>
-            )}
+            {ventaSeleccionada &&
+              puedeOperar &&
+              puedeAnular &&
+              ventaSeleccionada.estado !== 'ANULADA' && (
+                <CButton color="danger" onClick={() => handleAnular(ventaSeleccionada)}>
+                  Anular
+                </CButton>
+              )}
 
             {ventaSeleccionada && (
               <CButton color="primary" onClick={() => descargarPDF(ventaSeleccionada)}>

@@ -384,6 +384,19 @@ const POSPage = () => {
                 </div>
 
                 {/* Select */}
+                {/* <Select
+                  options={productos.map((p) => ({
+                    value: p.id,
+                    label: `${p.marca ? p.marca + ' - ' : ''}${p.nombre}${p.descripcion ? ' - ' + p.descripcion : ''} | Bs ${p.precio_venta}`,
+                  }))}
+                  placeholder="Escribe para buscar..."
+                  onChange={(selected) => {
+                    const producto = productos.find((p) => p.id === selected.value)
+                    if (producto) agregarProducto(producto)
+                  }}
+                  isSearchable
+                /> */}
+
                 <Select
                   options={productos.map((p) => ({
                     value: p.id,
@@ -395,6 +408,41 @@ const POSPage = () => {
                     if (producto) agregarProducto(producto)
                   }}
                   isSearchable
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor: '#ffffff',
+                      color: '#000000',
+                      borderColor: '#ced4da',
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      backgroundColor: '#ffffff',
+                      zIndex: 9999,
+                    }),
+                    menuList: (base) => ({
+                      ...base,
+                      backgroundColor: '#ffffff',
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isFocused ? '#f2f2f2' : '#ffffff',
+                      color: '#000000',
+                      cursor: 'pointer',
+                    }),
+                    singleValue: (base) => ({
+                      ...base,
+                      color: '#000000',
+                    }),
+                    input: (base) => ({
+                      ...base,
+                      color: '#000000',
+                    }),
+                    placeholder: (base) => ({
+                      ...base,
+                      color: '#666666',
+                    }),
+                  }}
                 />
               </div>
             ) : (

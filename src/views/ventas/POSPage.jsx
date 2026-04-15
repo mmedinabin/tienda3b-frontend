@@ -16,6 +16,7 @@ const POSPage = () => {
   const sucursalActiva = useAuthStore((state) => state.sucursalActiva)
 
   const location = useLocation()
+  const isDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches
 
   const [searchParams] = useSearchParams()
   const id = searchParams.get('id')
@@ -914,11 +915,12 @@ const POSPage = () => {
               bottom: 0,
               left: 0,
               right: 0,
-              background: '#fff',
+              background: isDark ? '#1e1e1e' : '#fff',
               padding: 12,
-              borderTop: '1px solid #ddd',
+              borderTop: isDark ? '1px solid #333' : '1px solid #ddd',
               zIndex: 1000,
-              boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
+              boxShadow: '0 -2px 10px rgba(0,0,0,0.15)',
+              color: isDark ? '#fff' : '#000',
             }}
           >
             {/* TOTAL */}
@@ -927,7 +929,6 @@ const POSPage = () => {
               <strong>Bs {total.toFixed(2)}</strong>
             </div>
 
-            {/* BOTÓN PRINCIPAL */}
             <CButton
               color={carrito.length === 0 ? 'secondary' : 'primary'}
               size="lg"
@@ -942,7 +943,6 @@ const POSPage = () => {
               {loading ? 'Procesando...' : isEdit ? 'Guardar modificación' : 'Finalizar Venta'}
             </CButton>
 
-            {/* BOTÓN SECUNDARIO (solo edición) */}
             {isEdit && (
               <CButton color="secondary" size="sm" className="w-100 mt-2" onClick={cancelarEdicion}>
                 Cancelar edición
@@ -950,41 +950,6 @@ const POSPage = () => {
             )}
           </div>
         )}
-
-        {/* {isMobile && (
-          <div
-            style={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              background: '#fff',
-              padding: 12,
-              borderTop: '1px solid #ddd',
-              zIndex: 1000,
-              boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
-            }}
-          >
-            <div className="d-flex justify-content-between">
-              <strong>Total:</strong>
-              <strong>Bs {total.toFixed(2)}</strong>
-            </div>
-
-            <CButton
-              color={carrito.length === 0 ? 'secondary' : 'primary'}
-              size="lg"
-              className="w-100 fw-semibold"
-              style={{
-                borderRadius: '12px',
-                height: '48px',
-              }}
-              onClick={cobrar}
-              disabled={carrito.length === 0 || loading}
-            >
-              {loading ? 'Procesando...' : isEdit ? 'Guardar modificación' : 'Finalizar Venta'}
-            </CButton>
-          </div>
-        )} */}
       </CCol>
     </CRow>
   )

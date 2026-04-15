@@ -230,36 +230,6 @@ const POSPage = () => {
       ])
     }
   }
-  // const agregarProducto = (producto) => {
-  //   const existe = carrito.find((p) => p.producto_id === producto.id)
-
-  //   if (existe) {
-  //     if (existe.cantidad + 1 > producto.stock) {
-  //       Swal.fire('Stock insuficiente')
-  //       return
-  //     }
-
-  //     setCarrito(
-  //       carrito.map((p) =>
-  //         p.producto_id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p,
-  //       ),
-  //     )
-  //   } else {
-  //     setCarrito([
-  //       ...carrito,
-  //       {
-  //         producto_id: producto.id,
-  //         nombre: producto.nombre,
-  //         marca: producto.marca,
-  //         descripcion: producto.descripcion,
-  //         cantidad: 1,
-  //         precio_original: Number(producto.precio_venta),
-  //         precio_venta: Number(producto.precio_venta),
-  //         stock: producto.stock,
-  //       },
-  //     ])
-  //   }
-  // }
 
   const getStockMax = (productoId, itemCarrito) => {
     const prod = productos.find((p) => p.id === productoId)
@@ -620,6 +590,7 @@ const POSPage = () => {
                                 overflow: 'hidden',
                                 fontWeight: 600,
                                 fontSize: '0.95rem',
+                                color: '#000', // 👈 FIX CLAVE
                               }}
                             >
                               {construirLabel(p)}
@@ -630,10 +601,14 @@ const POSPage = () => {
                             style={{
                               backgroundColor: '#faeee2', // verde mucho más claro
                               padding: '10px 12px',
+                              color: '#000', // 👈 FIX GLOBAL DEL BLOQUE
                             }}
                             className="d-flex justify-content-between align-items-center"
                           >
-                            <span className="small text-muted">Stock: {p.stock}</span>
+                            {/* <span className="small text-muted">Stock: {p.stock}</span> */}
+                            <span className="small" style={{ color: '#333' }}>
+                              Stock: {p.stock}
+                            </span>
 
                             <span
                               style={{

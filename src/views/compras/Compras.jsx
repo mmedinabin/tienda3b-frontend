@@ -48,7 +48,6 @@ const Compras = () => {
     try {
       setCargando(true)
       const { data } = await comprasService.listar()
-      //console.log(data)
       setCompras(data.data ?? data)
     } catch (error) {
       console.error('Error cargando compras', error)
@@ -249,111 +248,6 @@ const Compras = () => {
       })
     }
   }
-
-  // const CompraCard = ({ row, index }) => {
-  //   let estado = row.estado
-  //   let colorEstado = 'secondary'
-
-  //   switch (row.estado) {
-  //     case 'ANULADA':
-  //       estado = 'Anulada'
-  //       colorEstado = 'danger'
-  //       break
-  //     case 'PARCIAL':
-  //       estado = 'Parcial'
-  //       colorEstado = 'warning'
-  //       break
-  //     case 'PAGADA':
-  //       estado = 'Pagada'
-  //       colorEstado = 'success'
-  //       break
-  //     case 'PENDIENTE':
-  //       estado = 'Pendiente'
-  //       colorEstado = 'secondary'
-  //       break
-  //     default:
-  //       estado = row.estado
-  //   }
-
-  //   return (
-  //     <CCard
-  //       className="mb-3"
-  //       style={{
-  //         backgroundColor: '#f8f9fb',
-  //         borderRadius: '20px',
-  //         border: '1px solid #dee0e0',
-  //         boxShadow: '0 4px 14px rgba(0,0,0,0.05)',
-  //       }}
-  //     >
-  //       <CCardBody className="p-3">
-  //         {/* Header */}
-  //         <div className="d-flex justify-content-between align-items-center mb-2">
-  //           <span className="fw-semibold" style={{ fontSize: '0.9rem' }}>
-  //             #{index + 1} · {row.codigo}
-  //           </span>
-  //           <CBadge color={colorEstado}>{estado}</CBadge>
-  //         </div>
-
-  //         {/* Fecha + Tipo pago */}
-  //         <div className="d-flex justify-content-between align-items-center mb-3">
-  //           <span className="text-muted" style={{ fontSize: '0.8rem' }}>
-  //             {new Date(row.fecha).toLocaleDateString('es-BO')}
-  //           </span>
-
-  //           <CBadge color="info">{row.tipo_pago}</CBadge>
-  //         </div>
-
-  //         {/* Proveedor */}
-  //         <div className="d-flex justify-content-between mb-2">
-  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-  //             Proveedor
-  //           </span>
-  //           <span style={{ fontSize: '0.85rem' }}>{row.proveedor}</span>
-  //         </div>
-
-  //         {/* Sucursal */}
-  //         <div className="d-flex justify-content-between mb-2">
-  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-  //             Sucursal
-  //           </span>
-  //           <span style={{ fontSize: '0.85rem' }}>{row.sucursal}</span>
-  //         </div>
-
-  //         {/* Total */}
-  //         <div className="d-flex justify-content-between align-items-center mb-4">
-  //           <span className="text-muted" style={{ fontSize: '0.85rem' }}>
-  //             Total
-  //           </span>
-  //           <span className="fw-bold" style={{ fontSize: '1.1rem' }}>
-  //             Bs {Number(row.total).toFixed(2)}
-  //           </span>
-  //         </div>
-
-  //         {/* Botón */}
-  //         <div className="d-flex gap-2">
-  //           <CButton
-  //             size="sm"
-  //             color="info"
-  //             className="w-100"
-  //             onClick={() => setCompraSeleccionada(row)}
-  //           >
-  //             Ver detalle
-  //           </CButton>
-
-  //           <CButton size="sm" color="primary" className="w-100" onClick={() => descargarPDF(row)}>
-  //             PDF
-  //           </CButton>
-
-  //           {puedeOperar && puedeAnular && row.estado !== 'ANULADA' && (
-  //             <CButton size="sm" color="danger" className="w-100" onClick={() => handleAnular(row)}>
-  //               Anular
-  //             </CButton>
-  //           )}
-  //         </div>
-  //       </CCardBody>
-  //     </CCard>
-  //   )
-  // }
 
   const CompraCard = ({ row, index }) => {
     let estado = row.estado

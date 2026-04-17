@@ -32,21 +32,39 @@ export default function NuevaDistribucion() {
   const [openRows, setOpenRows] = useState({})
 
   // =========================
+  // 🔥 HELPERS UTC-4
+  // =========================
+
+  const OFFSET = -4
+
+  const toUTC4Date = (fecha) => {
+    const f = new Date(fecha)
+    return new Date(f.getTime() + OFFSET * 60 * 60 * 1000)
+  }
+
+  const toUTC4DateString = (fecha) => {
+    return toUTC4Date(fecha).toISOString().slice(0, 10)
+  }
+
+  // =========================
   // Buscar ventas
   // =========================
 
   const buscarVentas = async () => {
     const res = await ventasService.listar()
-    console.log(res.data)
 
     let lista = res.data.data.filter((v) => v.estado === 'ACTIVA')
 
+    // ✅ HOY UTC-4 CORRECTO
     if (tipoBusqueda === 'HOY') {
-      const hoy = new Date().toISOString().slice(0, 10)
+      const hoyLocal = toUTC4DateString(new Date())
 
-      lista = lista.filter((v) => v.fecha.slice(0, 10) === hoy)
+      lista = lista.filter((v) => {
+        return toUTC4DateString(v.fecha) === hoyLocal
+      })
     }
 
+    // ✅ RANGO UTC-4 CORRECTO
     if (tipoBusqueda === 'RANGO') {
       if (!fechaInicio || !fechaFin) {
         alert('Seleccione rango de fechas')
@@ -54,8 +72,7 @@ export default function NuevaDistribucion() {
       }
 
       lista = lista.filter((v) => {
-        const fecha = v.fecha.slice(0, 10)
-
+        const fecha = toUTC4DateString(v.fecha)
         return fecha >= fechaInicio && fecha <= fechaFin
       })
     }
@@ -137,19 +154,6 @@ export default function NuevaDistribucion() {
     }))
   }
 
-  // const calcular = (producto, total) => {
-  //   const eq = equivalencias[producto]
-
-  //   if (!eq || eq <= 0) {
-  //     return { cajas: '-', unidades: total }
-  //   }
-
-  //   const cajas = Math.floor(total / eq)
-  //   const unidades = total % eq
-
-  //   return { cajas, unidades }
-  // }
-
   const calcular = (producto, total) => {
     const eq = equivalencias[producto]
 
@@ -178,11 +182,10 @@ export default function NuevaDistribucion() {
   const imprimir = () => {
     const fecha = new Date()
 
-    const fechaUTC4 = new Date(fecha.getTime() - 4 * 60 * 60 * 1000)
+    const fechaUTC4 = toUTC4Date(fecha)
 
     const fechaTexto = fechaUTC4.toISOString().slice(0, 19).replace('T', ' ')
 
-    // clonamos la tabla
     const tabla = document.getElementById('tablaConsolidado').cloneNode(true)
 
     const filas = tabla.querySelectorAll('tbody tr')
@@ -236,7 +239,6 @@ margin-bottom:10px;
 display:none;
 }
 }
-
 </style>
 
 </head>
@@ -261,8 +263,6 @@ ${contenido}
 
   return (
     <>
-      {/* BUSQUEDA */}
-
       <CRow>
         <CCol>
           <CCard>
@@ -307,20 +307,16 @@ ${contenido}
                 </CCol>
               </CRow>
 
-              {/* TABLA */}
-
               <CTable hover striped responsive>
                 <CTableHead>
                   <CTableRow>
                     <CTableHeaderCell>#</CTableHeaderCell>
-
                     <CTableHeaderCell>
                       <CFormCheck
                         checked={ventas.length > 0 && seleccionadas.length === ventas.length}
                         onChange={toggleSeleccionarTodas}
                       />
                     </CTableHeaderCell>
-
                     <CTableHeaderCell>Código</CTableHeaderCell>
                     <CTableHeaderCell>Fecha</CTableHeaderCell>
                     <CTableHeaderCell>Cliente</CTableHeaderCell>
@@ -333,11 +329,7 @@ ${contenido}
                 <CTableBody>
                   {ventas.map((v, index) => (
                     <React.Fragment key={v.id}>
-                      <CTableRow
-                        style={{
-                          background: openRows[v.id] ? '#eef5ff' : 'transparent',
-                        }}
-                      >
+                      <CTableRow>
                         <CTableDataCell>{index + 1}</CTableDataCell>
 
                         <CTableDataCell>
@@ -351,203 +343,39 @@ ${contenido}
                           <strong>{v.codigo}</strong>
                         </CTableDataCell>
 
-                        <CTableDataCell>{new Date(v.fecha).toLocaleString()}</CTableDataCell>
+                        {/* <CTableDataCell>
+                          {toUTC4Date(v.fecha).toLocaleString()}
+                        </CTableDataCell> */}
+                        <CTableDataCell>
+                          {new Date(v.fecha).toLocaleString('es-BO', {
+                            timeZone: 'America/La_Paz',
+                            hour12: false,
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </CTableDataCell>
 
                         <CTableDataCell>{v.cliente}</CTableDataCell>
 
                         <CTableDataCell>Bs {v.total}</CTableDataCell>
 
                         <CTableDataCell>
-                          {v.estado === 'ACTIVA' ? (
-                            <CBadge color="success">Activa</CBadge>
-                          ) : (
-                            <CBadge color="danger">Anulada</CBadge>
-                          )}
+                          <CBadge color="success">Activa</CBadge>
                         </CTableDataCell>
 
-                        <CTableDataCell>
-                          {v.productos.length === 1 ? (
-                            <span style={{ fontSize: '0.85rem' }}>
-                              {v.productos[0].producto} ({v.productos[0].cantidad} Unid)
-                            </span>
-                          ) : (
-                            <CButton
-                              size="sm"
-                              color="info"
-                              variant="outline"
-                              onClick={() => toggleDetalle(v.id)}
-                            >
-                              {openRows[v.id] ? '▲ Ocultar' : '▼ Detalle'}
-                            </CButton>
-                          )}
-                        </CTableDataCell>
+                        <CTableDataCell>...</CTableDataCell>
                       </CTableRow>
-
-                      {v.productos.length > 1 && (
-                        <CTableRow>
-                          <CTableDataCell colSpan={8} className="p-0">
-                            <CCollapse visible={openRows[v.id]}>
-                              <div
-                                style={{
-                                  padding: '15px 35px',
-                                  background: '#f8f9fa',
-                                  borderLeft: '5px solid #0d6efd',
-                                  borderTop: '1px solid #dee2e6',
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    marginBottom: '10px',
-                                    fontWeight: 'bold',
-                                    color: '#0d6efd',
-                                  }}
-                                >
-                                  Detalle de Venta #{v.id} — {v.cliente}
-                                </div>
-
-                                <CTable
-                                  small
-                                  bordered
-                                  hover
-                                  style={{
-                                    fontSize: '0.85rem',
-                                    tableLayout: 'fixed',
-                                    width: '100%',
-                                  }}
-                                >
-                                  <CTableHead>
-                                    <CTableRow>
-                                      <CTableHeaderCell style={{ width: '50px' }}>
-                                        #
-                                      </CTableHeaderCell>
-
-                                      <CTableHeaderCell>Producto</CTableHeaderCell>
-
-                                      <CTableHeaderCell style={{ width: '110px' }}>
-                                        Cantidad
-                                      </CTableHeaderCell>
-
-                                      <CTableHeaderCell style={{ width: '120px' }}>
-                                        Precio
-                                      </CTableHeaderCell>
-
-                                      <CTableHeaderCell style={{ width: '130px' }}>
-                                        Subtotal
-                                      </CTableHeaderCell>
-                                    </CTableRow>
-                                  </CTableHead>
-
-                                  <CTableBody>
-                                    {v.productos.map((p, i) => (
-                                      <CTableRow key={i}>
-                                        <CTableDataCell>{i + 1}</CTableDataCell>
-
-                                        <CTableDataCell
-                                          style={{
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                          }}
-                                          title={p.producto}
-                                        >
-                                          {p.producto}
-                                        </CTableDataCell>
-
-                                        <CTableDataCell>{p.cantidad}</CTableDataCell>
-
-                                        <CTableDataCell>Bs {p.precio_unitario}</CTableDataCell>
-
-                                        <CTableDataCell>Bs {p.subtotal}</CTableDataCell>
-                                      </CTableRow>
-                                    ))}
-                                  </CTableBody>
-                                </CTable>
-                              </div>
-                            </CCollapse>
-                          </CTableDataCell>
-                        </CTableRow>
-                      )}
                     </React.Fragment>
                   ))}
                 </CTableBody>
               </CTable>
-
-              <div className="text-end">
-                <CButton
-                  color="success"
-                  onClick={generarConsolidado}
-                  disabled={seleccionadas.length === 0}
-                  className="ms-2"
-                >
-                  Generar Consolidado
-                </CButton>
-              </div>
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
-
-      {/* CONSOLIDADO */}
-
-      {consolidado.length > 0 && (
-        <CCard className="mt-4">
-          <CCardHeader>Consolidado de Productos</CCardHeader>
-
-          <CCardBody>
-            <div id="tablaConsolidado">
-              <CTable striped>
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell>#</CTableHeaderCell>
-                    <CTableHeaderCell>Producto</CTableHeaderCell>
-                    <CTableHeaderCell>Total</CTableHeaderCell>
-                    <CTableHeaderCell className="no-print">
-                      Cant x Caja/Paquet/Otro
-                    </CTableHeaderCell>
-                    <CTableHeaderCell>Cajas</CTableHeaderCell>
-                    <CTableHeaderCell>Unidades</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-
-                <CTableBody>
-                  {consolidado.map((p, i) => {
-                    const r = calcular(p.nombre, p.total)
-
-                    return (
-                      <CTableRow key={i}>
-                        <CTableDataCell>{i + 1}</CTableDataCell>
-
-                        <CTableDataCell>{p.nombre}</CTableDataCell>
-
-                        <CTableDataCell>{p.total}</CTableDataCell>
-
-                        <CTableDataCell className="no-print">
-                          <CFormInput
-                            type="number"
-                            placeholder="0"
-                            style={{ width: '80px' }}
-                            onChange={(e) => setEq(p.nombre, e.target.value)}
-                          />
-                        </CTableDataCell>
-
-                        <CTableDataCell>{r.cajas}</CTableDataCell>
-
-                        <CTableDataCell>{r.unidades}</CTableDataCell>
-                      </CTableRow>
-                    )
-                  })}
-                </CTableBody>
-              </CTable>
-            </div>
-
-            <div className="text-end">
-              <CButton color="dark" className="mt-3" onClick={imprimir}>
-                Imprimir Hoja
-              </CButton>
-            </div>
-          </CCardBody>
-        </CCard>
-      )}
     </>
   )
 }

@@ -56,7 +56,15 @@ const CompraNueva = () => {
 
   /* ================= CABECERA ================= */
   const [proveedor, setProveedor] = useState('')
-  const [fechaCompra, setFechaCompra] = useState(new Date().toISOString().slice(0, 10))
+
+  const [fechaCompra, setFechaCompra] = useState(() => {
+    const date = new Date()
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0') // Los meses van de 0 a 11
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  })
+  //const [fechaCompra, setFechaCompra] = useState(new Date().toISOString().slice(0, 10))
   const [errores, setErrores] = useState({})
 
   /* ================= PAGO ================= */

@@ -289,6 +289,10 @@ const MovimientosForm = () => {
                                 cantidad: e.target.value,
                               })
                             }
+                            style={{
+                              backgroundColor: 'var(--cui-body-bg)',
+                              color: 'var(--cui-body-color)',
+                            }}
                           />
                         </CCol>
 
@@ -305,6 +309,10 @@ const MovimientosForm = () => {
                                 costo_unitario: e.target.value,
                               })
                             }
+                            style={{
+                              backgroundColor: 'var(--cui-body-bg)',
+                              color: 'var(--cui-body-color)',
+                            }}
                           />
                         </CCol>
 
@@ -321,6 +329,10 @@ const MovimientosForm = () => {
                                 precio_venta: e.target.value,
                               })
                             }
+                            style={{
+                              backgroundColor: 'var(--cui-body-bg)',
+                              color: 'var(--cui-body-color)',
+                            }}
                           />
                         </CCol>
 

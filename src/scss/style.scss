@@ -128,8 +128,14 @@ body {
 
 .react-datepicker__input-container input {
   width: 100%;
+  background-color: var(--cui-body-bg) !important;
+  color: var(--cui-body-color) !important;
+  border: 1px solid var(--cui-border-color) !important;
 }
 
+.react-datepicker__input-container input::placeholder {
+  color: var(--cui-secondary-color) !important;
+}
 
 .modern-input .form-control,
 .modern-input .css-13cymwt-control {

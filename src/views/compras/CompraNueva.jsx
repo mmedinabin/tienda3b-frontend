@@ -743,8 +743,8 @@ const CompraNueva = () => {
                     invalid={erroresNumericos.cantidad}
                     value={productoTmp.cantidad}
                     style={{
-                      backgroundColor: '#ffffff',
-                      color: '#000000',
+                      backgroundColor: 'var(--cui-body-bg)',
+                      color: 'var(--cui-body-color)',
                     }}
                     onChange={(e) => {
                       let value = e.target.value
@@ -770,8 +770,8 @@ const CompraNueva = () => {
                     value={productoTmp.costo}
                     invalid={erroresNumericos.costo}
                     style={{
-                      backgroundColor: '#ffffff',
-                      color: '#000000',
+                      backgroundColor: 'var(--cui-body-bg)',
+                      color: 'var(--cui-body-color)',
                     }}
                     onChange={(e) => {
                       let value = normalizarDecimal(e.target.value)
@@ -799,8 +799,8 @@ const CompraNueva = () => {
                     value={productoTmp.precio_venta}
                     invalid={erroresNumericos.precio_venta}
                     style={{
-                      backgroundColor: '#ffffff',
-                      color: '#000000',
+                      backgroundColor: 'var(--cui-body-bg)',
+                      color: 'var(--cui-body-color)',
                     }}
                     onChange={(e) => {
                       let value = normalizarDecimal(e.target.value)
@@ -820,81 +820,6 @@ const CompraNueva = () => {
                     }}
                   />
                 </CCol>
-
-                {/* <CCol md={1}>
-                  <CFormInput
-                    label="Cantidad"
-                    type="number"
-                    min="0"
-                    step="1"
-                    invalid={erroresNumericos.cantidad}
-                    value={productoTmp.cantidad}
-                    onChange={(e) => {
-                      let value = e.target.value
-
-                      if (Number(value) < 0) {
-                        value = 0
-                      }
-
-                      setErroresNumericos((prev) => ({
-                        ...prev,
-                        cantidad: Number(value) <= 0,
-                      }))
-
-                      setProductoTmp({ ...productoTmp, cantidad: value })
-                    }}
-                  />
-                </CCol>
-
-                <CCol md={2}>
-                  <CFormInput
-                    label="Costo"
-                    type="text"
-                    value={productoTmp.costo}
-                    invalid={erroresNumericos.costo}
-                    onChange={(e) => {
-                      let value = normalizarDecimal(e.target.value)
-
-                      setProductoTmp({ ...productoTmp, costo: value })
-
-                      setErroresNumericos((prev) => ({
-                        ...prev,
-                        costo: Number(value) <= 0,
-                      }))
-                    }}
-                    onBlur={(e) => {
-                      if (e.target.value) {
-                        const formateado = Number(e.target.value).toFixed(2)
-                        setProductoTmp({ ...productoTmp, costo: formateado })
-                      }
-                    }}
-                  />
-                </CCol>
-
-                <CCol md={2}>
-                  <CFormInput
-                    label="Precio vta"
-                    type="text"
-                    value={productoTmp.precio_venta}
-                    invalid={erroresNumericos.precio_venta}
-                    onChange={(e) => {
-                      let value = normalizarDecimal(e.target.value)
-
-                      setProductoTmp({ ...productoTmp, precio_venta: value })
-
-                      setErroresNumericos((prev) => ({
-                        ...prev,
-                        precio_venta: Number(value) <= 0,
-                      }))
-                    }}
-                    onBlur={(e) => {
-                      if (e.target.value) {
-                        const formateado = Number(e.target.value).toFixed(2)
-                        setProductoTmp({ ...productoTmp, precio_venta: formateado })
-                      }
-                    }}
-                  />
-                </CCol> */}
 
                 <CCol md={2}>
                   <CButton

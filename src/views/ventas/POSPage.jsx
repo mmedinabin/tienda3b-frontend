@@ -117,6 +117,8 @@ const POSPage = () => {
           venta.productos.map((p) => ({
             producto_id: p.producto_id,
             nombre: p.producto,
+            marca: p.marca || '',
+            descripcion: p.descripcion || '',
             cantidad: Number(p.cantidad),
             cantidadOriginal: Number(p.cantidad),
             precio_venta: Number(p.precio_unitario),
@@ -176,7 +178,6 @@ const POSPage = () => {
     const stockReal = Number(producto.stock || 0)
 
     if (!isEdit) {
-      // 🔥 CREAR VENTA
       if (existente) {
         if (existente.cantidad + 1 > stockReal) {
           Swal.fire('Stock insuficiente')
@@ -194,6 +195,8 @@ const POSPage = () => {
           {
             producto_id: producto.id,
             nombre: producto.nombre,
+            marca: producto.marca,
+            descripcion: producto.descripcion,
             cantidad: 1,
             precio_venta: Number(producto.precio_venta),
           },
@@ -203,7 +206,6 @@ const POSPage = () => {
       return
     }
 
-    // 🔥 EDITAR VENTA
     const stockMax = stockReal + (existente?.cantidadOriginal || existente?.cantidad || 0)
 
     if (existente) {
@@ -223,6 +225,8 @@ const POSPage = () => {
         {
           producto_id: producto.id,
           nombre: producto.nombre,
+          marca: producto.marca, // <--- Agregar esto
+          descripcion: producto.descripcion, // <--- Agregar esto
           cantidad: 1,
           cantidadOriginal: 1,
           precio_venta: Number(producto.precio_venta),

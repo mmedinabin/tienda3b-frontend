@@ -19,6 +19,7 @@ import { useRef } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 import { es } from 'date-fns/locale'
 import { format } from 'date-fns'
+import { reactSelectStyles } from '../../styles/reactSelect'
 import { productosService } from '../../services/productos.service'
 import { movimientosService } from '../../services/movimientos.service'
 
@@ -560,6 +561,7 @@ const MovimientosForm = () => {
                           stock: Number(producto.stock),
                         })
                       }}
+                      styles={reactSelectStyles}
                       placeholder="Buscar producto..."
                       isClearable
                     />

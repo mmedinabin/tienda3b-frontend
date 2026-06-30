@@ -31,6 +31,7 @@ import {
 } from '@coreui/react'
 import Select from 'react-select'
 import { format } from 'date-fns'
+import { reactSelectStyles } from '../../styles/reactSelect'
 import comprasService from '../../services/compras.service'
 import { proveedoresService } from '../../services/proveedores.service'
 import { productosService } from '../../services/productos.service'
@@ -380,46 +381,7 @@ const CompraNueva = () => {
                       }}
                       placeholder="Buscar proveedor..."
                       isClearable
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          minHeight: 38,
-                          backgroundColor: '#ffffff',
-                          color: '#000000',
-                          borderColor: '#d8dbe0',
-                          boxShadow: 'none',
-                        }),
-                        singleValue: (base) => ({
-                          ...base,
-                          color: '#000000',
-                        }),
-                        input: (base) => ({
-                          ...base,
-                          color: '#000000',
-                        }),
-                        placeholder: (base) => ({
-                          ...base,
-                          color: '#666666',
-                        }),
-                        menu: (base) => ({
-                          ...base,
-                          backgroundColor: '#ffffff',
-                        }),
-                        menuList: (base) => ({
-                          ...base,
-                          backgroundColor: '#ffffff',
-                        }),
-                        option: (base, state) => ({
-                          ...base,
-                          backgroundColor: state.isFocused ? '#f2f2f2' : '#ffffff',
-                          color: '#000000',
-                          cursor: 'pointer',
-                        }),
-                        menuPortal: (base) => ({
-                          ...base,
-                          zIndex: 9999,
-                        }),
-                      }}
+                      styles={reactSelectStyles}
                       menuPortalTarget={document.body}
                       menuPosition="fixed"
                     />
@@ -713,6 +675,7 @@ const CompraNueva = () => {
                         }}
                         placeholder="Buscar producto..."
                         isClearable
+                        styles={reactSelectStyles}
                       />
                     </div>
 

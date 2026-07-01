@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef } from 'react'
+import { useEffect, useState, forwardRef } from "react";
 import {
   CCard,
   CCardHeader,
@@ -9,41 +9,46 @@ import {
   CButton,
   CRow,
   CCol,
-} from '@coreui/react'
-import Swal from 'sweetalert2'
-import Select from 'react-select'
-import { CInputGroup, CInputGroupText, CFormLabel, CCollapse } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilCalendar } from '@coreui/icons'
-import { useRef } from 'react'
-import DatePicker, { registerLocale } from 'react-datepicker'
-import { es } from 'date-fns/locale'
-import { format } from 'date-fns'
-import { reactSelectStyles } from '../../styles/reactSelect'
-import { productosService } from '../../services/productos.service'
-import { movimientosService } from '../../services/movimientos.service'
+} from "@coreui/react";
+import Swal from "sweetalert2";
+import Select from "react-select";
+import {
+  CInputGroup,
+  CInputGroupText,
+  CFormLabel,
+  CCollapse,
+} from "@coreui/react";
+import CIcon from "@coreui/icons-react";
+import { cilCalendar } from "@coreui/icons";
+import { useRef } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale";
+import { format } from "date-fns";
+import { reactSelectStyles } from "../../styles/reactSelect";
+import { productosService } from "../../services/productos.service";
+import { movimientosService } from "../../services/movimientos.service";
 
 const MovimientosForm = () => {
-  const [tipoMovimiento, setTipoMovimiento] = useState('ENTRADA_INICIAL')
-  const [productos, setProductos] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [tipoMovimiento, setTipoMovimiento] = useState("ENTRADA_INICIAL");
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
-    precio_venta: '',
-    fecha_vencimiento: '',
-  })
+    precio_venta: "",
+    fecha_vencimiento: "",
+  });
 
   const [detalleTemp, setDetalleTemp] = useState({
-    producto_id: '',
+    producto_id: "",
     cantidad: 0, // 🔥 inicia en 0
-    costo_unitario: '',
-    precio_venta: '',
-    fecha_vencimiento: '',
+    costo_unitario: "",
+    precio_venta: "",
+    fecha_vencimiento: "",
     stock: 0,
-  })
+  });
 
-  const [detalles, setDetalles] = useState([])
-  const [showAddForm, setShowAddForm] = useState(false)
+  const [detalles, setDetalles] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // =========================
   // 📦 CARGAR PRODUCTOS
@@ -51,95 +56,103 @@ const MovimientosForm = () => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const res = await productosService.listar()
-        setProductos(res.data.data)
+        const res = await productosService.listar();
+        setProductos(res.data.data);
       } catch (error) {
-        Swal.fire('Error', 'No se pudieron cargar los productos', 'error')
+        Swal.fire("Error", "No se pudieron cargar los productos", "error");
       }
-    }
+    };
 
-    fetchProductos()
-  }, [])
+    fetchProductos();
+  }, []);
 
   // =========================
   // 📝 HANDLE CHANGE
   // =========================
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm({ ...form, [name]: value })
-  }
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
   const agregarProducto = () => {
-    const cantidad = Number(detalleTemp.cantidad)
-    const costo = Number(detalleTemp.costo_unitario)
-    const precio = Number(detalleTemp.precio_venta)
+    const cantidad = Number(detalleTemp.cantidad);
+    const costo = Number(detalleTemp.costo_unitario);
+    const precio = Number(detalleTemp.precio_venta);
 
     if (!detalleTemp.producto_id) {
-      Swal.fire('Error', 'Debe seleccionar un producto', 'warning')
-      return
+      Swal.fire("Error", "Debe seleccionar un producto", "warning");
+      return;
     }
 
     if (cantidad <= 0) {
-      Swal.fire('Error', 'La cantidad debe ser mayor a 0', 'warning')
-      return
+      Swal.fire("Error", "La cantidad debe ser mayor a 0", "warning");
+      return;
     }
 
     if (costo <= 0) {
-      Swal.fire('Error', 'El costo debe ser mayor a 0', 'warning')
-      return
+      Swal.fire("Error", "El costo debe ser mayor a 0", "warning");
+      return;
     }
 
     if (precio <= 0) {
-      Swal.fire('Error', 'El precio debe ser mayor a 0', 'warning')
-      return
+      Swal.fire("Error", "El precio debe ser mayor a 0", "warning");
+      return;
     }
 
     if (precio <= costo) {
-      Swal.fire('Error', 'El precio de venta debe ser mayor al costo', 'warning')
-      return
+      Swal.fire(
+        "Error",
+        "El precio de venta debe ser mayor al costo",
+        "warning",
+      );
+      return;
     }
 
-    const productoSeleccionado = productos.find((p) => p.id === detalleTemp.producto_id)
+    const productoSeleccionado = productos.find(
+      (p) => p.id === detalleTemp.producto_id,
+    );
 
-    if (!productoSeleccionado) return
+    if (!productoSeleccionado) return;
 
     const nuevoDetalle = {
       ...detalleTemp,
       cantidad,
       costo_unitario: costo,
       precio_venta: precio,
-      producto_nombre: productosOptions.find((o) => o.value === detalleTemp.producto_id)?.label,
-    }
+      producto_nombre: productosOptions.find(
+        (o) => o.value === detalleTemp.producto_id,
+      )?.label,
+    };
 
-    setDetalles((prev) => [...prev, nuevoDetalle])
+    setDetalles((prev) => [...prev, nuevoDetalle]);
 
     // Reset
     setDetalleTemp({
-      producto_id: '',
+      producto_id: "",
       cantidad: 0,
-      costo_unitario: '',
-      precio_venta: '',
-      fecha_vencimiento: '',
+      costo_unitario: "",
+      precio_venta: "",
+      fecha_vencimiento: "",
       stock: 0,
-    })
-  }
+    });
+  };
 
   const eliminarProducto = (index) => {
-    const nuevos = [...detalles]
-    nuevos.splice(index, 1)
-    setDetalles(nuevos)
-  }
+    const nuevos = [...detalles];
+    nuevos.splice(index, 1);
+    setDetalles(nuevos);
+  };
 
   // =========================
   // 🚀 SUBMIT
   // =========================
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (detalles.length === 0)
-      return Swal.fire('Error', 'Debe agregar al menos un producto', 'error')
+      return Swal.fire("Error", "Debe agregar al menos un producto", "error");
     try {
-      setLoading(true)
+      setLoading(true);
 
       await movimientosService.cargaInicial({
         detalles: detalles.map((d) => ({
@@ -149,23 +162,23 @@ const MovimientosForm = () => {
           precio_venta: d.precio_venta ? Number(d.precio_venta) : null,
           fecha_vencimiento: d.fecha_vencimiento || null,
         })),
-      })
+      });
 
-      Swal.fire('Éxito', 'Movimiento registrado correctamente', 'success')
+      Swal.fire("Éxito", "Movimiento registrado correctamente", "success");
 
-      setDetalles([])
+      setDetalles([]);
     } catch (error) {
-      Swal.fire('Error', error.response?.data?.message || 'Error', 'error')
+      Swal.fire("Error", error.response?.data?.message || "Error", "error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const productosOptions = productos.map((p) => ({
     value: p.id,
     label: p.marca ? `${p.marca} - ${p.nombre}` : p.nombre,
     producto: p,
-  }))
+  }));
 
   const CustomDateInput = forwardRef(({ value, onClick, placeholder }, ref) => (
     <input
@@ -177,10 +190,10 @@ const MovimientosForm = () => {
       ref={ref}
       readOnly
     />
-  ))
+  ));
 
-  const datePickerRef = useRef(null)
-  registerLocale('es', es)
+  const datePickerRef = useRef(null);
+  registerLocale("es", es);
 
   return (
     <CCard>
@@ -209,7 +222,7 @@ const MovimientosForm = () => {
           {/* 📦 CARGA INICIAL */}
           {/* ========================= */}
 
-          {tipoMovimiento === 'ENTRADA_INICIAL' && (
+          {tipoMovimiento === "ENTRADA_INICIAL" && (
             <>
               {/* 📱 MOBILE */}
               <div className="d-block d-md-none">
@@ -218,28 +231,28 @@ const MovimientosForm = () => {
                   onClick={() => setShowAddForm(!showAddForm)}
                   className="w-100 mb-3 d-flex align-items-center justify-content-center"
                   style={{
-                    backgroundColor: 'rgba(25, 135, 84, 0.12)', // verde suave
-                    border: '1px solid rgba(25, 135, 84, 0.35)',
-                    color: '#198754',
+                    backgroundColor: "rgba(25, 135, 84, 0.12)", // verde suave
+                    border: "1px solid rgba(25, 135, 84, 0.35)",
+                    color: "#198754",
                     fontWeight: 600,
-                    borderRadius: '12px',
-                    padding: '12px',
-                    transition: 'all 0.15s ease',
+                    borderRadius: "12px",
+                    padding: "12px",
+                    transition: "all 0.15s ease",
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem', marginRight: '8px' }}>
-                    {showAddForm ? '−' : '+'}
+                  <span style={{ fontSize: "1.2rem", marginRight: "8px" }}>
+                    {showAddForm ? "−" : "+"}
                   </span>
 
-                  {showAddForm ? 'Ocultar formulario' : 'Añadir producto'}
+                  {showAddForm ? "Ocultar formulario" : "Añadir producto"}
                 </CButton>
 
                 <CCollapse visible={showAddForm}>
                   <CCard
                     className="mb-3 shadow-sm border-0"
                     style={{
-                      borderRadius: '18px',
-                      backgroundColor: '#f8f9ff',
+                      borderRadius: "18px",
+                      backgroundColor: "#f8f9ff",
                     }}
                   >
                     <CCardBody className="modern-input modern-label">
@@ -250,28 +263,29 @@ const MovimientosForm = () => {
                           <Select
                             options={productosOptions}
                             value={
-                              productosOptions.find((o) => o.value === detalleTemp.producto_id) ||
-                              null
+                              productosOptions.find(
+                                (o) => o.value === detalleTemp.producto_id,
+                              ) || null
                             }
                             onChange={(selected) => {
                               if (!selected) {
                                 setDetalleTemp({
                                   ...detalleTemp,
-                                  producto_id: '',
-                                  precio_venta: '',
+                                  producto_id: "",
+                                  precio_venta: "",
                                   stock: 0,
-                                })
-                                return
+                                });
+                                return;
                               }
 
-                              const producto = selected.producto
+                              const producto = selected.producto;
 
                               setDetalleTemp({
                                 ...detalleTemp,
                                 producto_id: producto.id,
                                 precio_venta: producto.precio_venta,
                                 stock: Number(producto.stock),
-                              })
+                              });
                             }}
                             placeholder="Buscar producto..."
                             isClearable
@@ -291,8 +305,8 @@ const MovimientosForm = () => {
                               })
                             }
                             style={{
-                              backgroundColor: 'var(--cui-body-bg)',
-                              color: 'var(--cui-body-color)',
+                              backgroundColor: "var(--cui-body-bg)",
+                              color: "var(--cui-body-color)",
                             }}
                           />
                         </CCol>
@@ -311,8 +325,8 @@ const MovimientosForm = () => {
                               })
                             }
                             style={{
-                              backgroundColor: 'var(--cui-body-bg)',
-                              color: 'var(--cui-body-color)',
+                              backgroundColor: "var(--cui-body-bg)",
+                              color: "var(--cui-body-color)",
                             }}
                           />
                         </CCol>
@@ -331,14 +345,16 @@ const MovimientosForm = () => {
                               })
                             }
                             style={{
-                              backgroundColor: 'var(--cui-body-bg)',
-                              color: 'var(--cui-body-color)',
+                              backgroundColor: "var(--cui-body-bg)",
+                              color: "var(--cui-body-color)",
                             }}
                           />
                         </CCol>
 
                         <CCol xs={12}>
-                          <CFormLabel className="modern-label">Fecha de venc (opcional)</CFormLabel>
+                          <CFormLabel className="modern-label">
+                            Fecha de venc (opcional)
+                          </CFormLabel>
                           <DatePicker
                             locale="es"
                             selected={
@@ -349,7 +365,9 @@ const MovimientosForm = () => {
                             onChange={(date) =>
                               setDetalleTemp({
                                 ...detalleTemp,
-                                fecha_vencimiento: date ? format(date, 'yyyy-MM-dd') : '',
+                                fecha_vencimiento: date
+                                  ? format(date, "yyyy-MM-dd")
+                                  : "",
                               })
                             }
                             dateFormat="dd/MM/yyyy"
@@ -363,21 +381,26 @@ const MovimientosForm = () => {
                         <CCol xs={12}>
                           <CButton
                             onClick={() => {
-                              agregarProducto()
-                              setShowAddForm(false)
+                              agregarProducto();
+                              setShowAddForm(false);
                             }}
                             className="w-100 fw-semibold"
                             style={{
-                              background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-                              border: 'none',
-                              borderRadius: '14px',
-                              padding: '12px',
-                              fontSize: '0.95rem',
-                              boxShadow: '0 4px 12px rgba(34, 197, 94, 0.25)',
-                              transition: 'all 0.15s ease',
+                              background:
+                                "linear-gradient(135deg, #22c55e, #16a34a)",
+                              border: "none",
+                              borderRadius: "14px",
+                              padding: "12px",
+                              fontSize: "0.95rem",
+                              boxShadow: "0 4px 12px rgba(34, 197, 94, 0.25)",
+                              transition: "all 0.15s ease",
                             }}
-                            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
-                            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                            onMouseDown={(e) =>
+                              (e.currentTarget.style.transform = "scale(0.98)")
+                            }
+                            onMouseUp={(e) =>
+                              (e.currentTarget.style.transform = "scale(1)")
+                            }
                           >
                             + Agregar al carrito
                           </CButton>
@@ -392,10 +415,10 @@ const MovimientosForm = () => {
                     key={index}
                     className="mb-3 border-0 shadow-sm"
                     style={{
-                      borderRadius: '14px',
-                      overflow: 'hidden',
-                      backgroundColor: '#f3f4f7',
-                      transition: 'all 0.15s ease',
+                      borderRadius: "14px",
+                      overflow: "hidden",
+                      backgroundColor: "#f3f4f7",
+                      transition: "all 0.15s ease",
                     }}
                   >
                     <CCardBody>
@@ -403,19 +426,19 @@ const MovimientosForm = () => {
                       <div
                         style={{
                           fontWeight: 600,
-                          fontSize: '0.95rem',
-                          lineHeight: '1.2rem',
-                          display: '-webkit-box',
+                          fontSize: "0.95rem",
+                          lineHeight: "1.2rem",
+                          display: "-webkit-box",
                           WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          wordBreak: 'break-word',
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          wordBreak: "break-word",
                         }}
                       >
                         <span
                           style={{
-                            color: '#6c757d',
-                            marginRight: '6px',
+                            color: "#6c757d",
+                            marginRight: "6px",
                           }}
                         >
                           #{index + 1}
@@ -431,9 +454,9 @@ const MovimientosForm = () => {
                             <div className="small text-muted mb-1">Costo</div>
                             <div
                               style={{
-                                fontSize: '1.05rem',
+                                fontSize: "1.05rem",
                                 fontWeight: 700,
-                                color: '#111',
+                                color: "#111",
                               }}
                             >
                               Bs {Number(item.costo_unitario).toFixed(2)}
@@ -441,12 +464,12 @@ const MovimientosForm = () => {
                           </div>
 
                           {/* CANTIDAD */}
-                          <div style={{ textAlign: 'center' }}>
+                          <div style={{ textAlign: "center" }}>
                             <div className="small text-muted mb-1">Cant.</div>
                             <div
                               style={{
                                 fontWeight: 600,
-                                fontSize: '1rem',
+                                fontSize: "1rem",
                               }}
                             >
                               {item.cantidad}
@@ -457,19 +480,25 @@ const MovimientosForm = () => {
 
                       {/* 3️⃣ PRECIO VENTA + VENCIMIENTO */}
                       <div className="mt-3 small text-muted">
-                        Venta:{' '}
-                        {item.precio_venta ? `Bs ${Number(item.precio_venta).toFixed(2)}` : '-'}
+                        Venta:{" "}
+                        {item.precio_venta
+                          ? `Bs ${Number(item.precio_venta).toFixed(2)}`
+                          : "-"}
                         <br />
-                        Vence:{' '}
+                        Vence:{" "}
                         {item.fecha_vencimiento
-                          ? format(new Date(item.fecha_vencimiento), 'dd/MM/yyyy')
-                          : '-'}
+                          ? format(
+                              new Date(item.fecha_vencimiento),
+                              "dd/MM/yyyy",
+                            )
+                          : "-"}
                       </div>
 
                       {/* 4️⃣ TOTAL + ELIMINAR */}
                       <div className="d-flex justify-content-between align-items-center mt-3">
                         <div className="fw-semibold">
-                          SubTotal: Bs {(item.cantidad * item.costo_unitario).toFixed(2)}
+                          SubTotal: Bs{" "}
+                          {(item.cantidad * item.costo_unitario).toFixed(2)}
                         </div>
 
                         <CButton
@@ -491,10 +520,10 @@ const MovimientosForm = () => {
                 className="d-md-none position-fixed bottom-0 start-0 w-100"
                 style={{
                   zIndex: 1050,
-                  padding: '12px 14px',
-                  background: 'rgba(255,255,255,0.92)',
-                  backdropFilter: 'blur(6px)',
-                  borderTop: '1px solid #e5e7eb',
+                  padding: "12px 14px",
+                  background: "rgba(255,255,255,0.92)",
+                  backdropFilter: "blur(6px)",
+                  borderTop: "1px solid #e5e7eb",
                 }}
               >
                 <CButton
@@ -502,19 +531,23 @@ const MovimientosForm = () => {
                   disabled={loading}
                   className="w-100 fw-bold"
                   style={{
-                    backgroundColor: 'var(--cui-primary)',
-                    border: 'none',
-                    borderRadius: '16px',
-                    padding: '15px',
-                    fontSize: '1.05rem',
-                    letterSpacing: '0.3px',
-                    boxShadow: '0 6px 16px rgba(111, 66, 193, 0.35)',
-                    transition: 'all 0.15s ease',
+                    backgroundColor: "var(--cui-primary)",
+                    border: "none",
+                    borderRadius: "16px",
+                    padding: "15px",
+                    fontSize: "1.05rem",
+                    letterSpacing: "0.3px",
+                    boxShadow: "0 6px 16px rgba(111, 66, 193, 0.35)",
+                    transition: "all 0.15s ease",
                   }}
-                  onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
-                  onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  onMouseDown={(e) =>
+                    (e.currentTarget.style.transform = "scale(0.98)")
+                  }
+                  onMouseUp={(e) =>
+                    (e.currentTarget.style.transform = "scale(1)")
+                  }
                 >
-                  {loading ? 'Guardando...' : 'Guardar Movimiento'}
+                  {loading ? "Guardando..." : "Guardar Movimiento"}
                 </CButton>
               </div>
 
@@ -528,7 +561,9 @@ const MovimientosForm = () => {
                       {detalleTemp.producto_id && (
                         <small
                           className={`fw-bold ${
-                            Number(detalleTemp.stock) > 0 ? 'text-success' : 'text-danger'
+                            Number(detalleTemp.stock) > 0
+                              ? "text-success"
+                              : "text-danger"
                           }`}
                         >
                           Stock: {detalleTemp.stock}
@@ -539,27 +574,29 @@ const MovimientosForm = () => {
                     <Select
                       options={productosOptions}
                       value={
-                        productosOptions.find((o) => o.value === detalleTemp.producto_id) || null
+                        productosOptions.find(
+                          (o) => o.value === detalleTemp.producto_id,
+                        ) || null
                       }
                       onChange={(selected) => {
                         if (!selected) {
                           setDetalleTemp({
                             ...detalleTemp,
-                            producto_id: '',
-                            precio_venta: '',
+                            producto_id: "",
+                            precio_venta: "",
                             stock: 0,
-                          })
-                          return
+                          });
+                          return;
                         }
 
-                        const producto = selected.producto
+                        const producto = selected.producto;
 
                         setDetalleTemp({
                           ...detalleTemp,
                           producto_id: producto.id,
                           precio_venta: producto.precio_venta,
                           stock: Number(producto.stock),
-                        })
+                        });
                       }}
                       styles={reactSelectStyles}
                       placeholder="Buscar producto..."
@@ -588,7 +625,10 @@ const MovimientosForm = () => {
                       label="Costo"
                       value={detalleTemp.costo_unitario}
                       onChange={(e) =>
-                        setDetalleTemp({ ...detalleTemp, costo_unitario: e.target.value })
+                        setDetalleTemp({
+                          ...detalleTemp,
+                          costo_unitario: e.target.value,
+                        })
                       }
                     />
                   </CCol>
@@ -619,7 +659,9 @@ const MovimientosForm = () => {
                       onChange={(date) =>
                         setDetalleTemp({
                           ...detalleTemp,
-                          fecha_vencimiento: date ? format(date, 'yyyy-MM-dd') : '',
+                          fecha_vencimiento: date
+                            ? format(date, "yyyy-MM-dd")
+                            : "",
                         })
                       }
                       dateFormat="dd/MM/yyyy"
@@ -631,7 +673,11 @@ const MovimientosForm = () => {
                   </CCol>
                   <CCol md={2} className="mb-3 d-flex flex-column">
                     <CFormLabel className="invisible">Acción</CFormLabel>
-                    <CButton color="success" onClick={agregarProducto} className="w-100 w-md-auto">
+                    <CButton
+                      color="success"
+                      onClick={agregarProducto}
+                      className="w-100 w-md-auto"
+                    >
                       Agregar producto
                     </CButton>
                   </CCol>
@@ -640,28 +686,39 @@ const MovimientosForm = () => {
                   <table
                     className="table table-sm align-middle"
                     style={{
-                      backgroundColor: '#ffffff',
-                      borderRadius: '12px',
-                      overflow: 'hidden',
+                      backgroundColor: "#ffffff",
+                      borderRadius: "12px",
+                      overflow: "hidden",
                     }}
                   >
                     <thead
                       style={{
-                        backgroundColor: '#f1f3f7',
-                        fontSize: '0.85rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.4px',
+                        backgroundColor: "#f1f3f7",
+                        fontSize: "0.85rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.4px",
                       }}
                     >
                       <tr>
-                        <th style={{ width: '50px' }} className="text-center text-muted">
+                        <th
+                          style={{ width: "50px" }}
+                          className="text-center text-muted"
+                        >
                           #
                         </th>
                         <th className="fw-semibold text-muted">Producto</th>
-                        <th className="fw-semibold text-muted text-center">Cant.</th>
-                        <th className="fw-semibold text-muted text-end">Costo</th>
-                        <th className="fw-semibold text-muted text-end">P. Venta</th>
-                        <th className="fw-semibold text-muted text-center">F. Venc.</th>
+                        <th className="fw-semibold text-muted text-center">
+                          Cant.
+                        </th>
+                        <th className="fw-semibold text-muted text-end">
+                          Costo
+                        </th>
+                        <th className="fw-semibold text-muted text-end">
+                          P. Venta
+                        </th>
+                        <th className="fw-semibold text-muted text-center">
+                          F. Venc.
+                        </th>
                         <th className="text-center"></th>
                       </tr>
                     </thead>
@@ -670,22 +727,33 @@ const MovimientosForm = () => {
                       {detalles.map((item, index) => (
                         <tr key={index}>
                           {/* NUMERACIÓN */}
-                          <td className="text-center fw-semibold text-muted">{index + 1}</td>
+                          <td className="text-center fw-semibold text-muted">
+                            {index + 1}
+                          </td>
 
                           <td className="fw-medium">{item.producto_nombre}</td>
 
-                          <td className="text-center fw-semibold">{item.cantidad}</td>
-
-                          <td className="text-end">Bs {Number(item.costo_unitario).toFixed(2)}</td>
+                          <td className="text-center fw-semibold">
+                            {item.cantidad}
+                          </td>
 
                           <td className="text-end">
-                            {item.precio_venta ? `Bs ${Number(item.precio_venta).toFixed(2)}` : '-'}
+                            Bs {Number(item.costo_unitario).toFixed(2)}
+                          </td>
+
+                          <td className="text-end">
+                            {item.precio_venta
+                              ? `Bs ${Number(item.precio_venta).toFixed(2)}`
+                              : "-"}
                           </td>
 
                           <td className="text-center">
                             {item.fecha_vencimiento
-                              ? format(new Date(item.fecha_vencimiento), 'dd/MM/yyyy')
-                              : '-'}
+                              ? format(
+                                  new Date(item.fecha_vencimiento),
+                                  "dd/MM/yyyy",
+                                )
+                              : "-"}
                           </td>
 
                           <td className="text-center">
@@ -705,8 +773,13 @@ const MovimientosForm = () => {
                 </div>
                 <CRow className="mt-4">
                   <CCol className="d-flex justify-content-end">
-                    <CButton type="submit" color="primary" disabled={loading} className="px-4">
-                      {loading ? 'Guardando...' : 'Registrar Movimiento'}
+                    <CButton
+                      type="submit"
+                      color="primary"
+                      disabled={loading}
+                      className="px-4"
+                    >
+                      {loading ? "Guardando..." : "Registrar Movimiento"}
                     </CButton>
                   </CCol>
                 </CRow>
@@ -716,7 +789,7 @@ const MovimientosForm = () => {
         </CForm>
       </CCardBody>
     </CCard>
-  )
-}
+  );
+};
 
-export default MovimientosForm
+export default MovimientosForm;
